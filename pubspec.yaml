@@ -49,6 +49,7 @@ dependencies:
   fluttertoast: ^8.2.8
   flutter_expandable_fab: ^2.3.0
   local_auth: ^2.3.0
+  flutter_native_splash: ^2.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -89,6 +90,29 @@ flutter_launcher_icons:
     generate: true
     image_path: "assets/icon.png"
 
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+
+  background_image_dark: "assets/background_dark.png"
+  image_dark: "assets/splash.png"
+  branding_dark: "assets/branding_dark.png"
+
+  background_image: "assets/background_android.png"
+  image: "assets/splash.png"
+  branding: "assets/branding.png"
+
+
+  android_12:
+    color_dark: "000000"
+    image_dark: "assets/splash.png"
+    branding_dark: "assets/android_branding_dark.png"
+
+    color: "ffffff"
+    image: "assets/android_splash.png"
+    branding: "assets/android_branding.png"
 # The following section is specific to Flutter packages.
 flutter:
 

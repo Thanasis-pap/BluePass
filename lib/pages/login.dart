@@ -126,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                           'assets/logo.png',
                           width: 60,
                         ),
+                        const SizedBox(height: 10),
                         Text(
                           'BluePass',
                           style: Theme.of(context)
@@ -185,10 +186,12 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text('Login'),
                     ),
                     const SizedBox(height: 10),
-                    ElevatedButton(
+                    Global.auth
+                    ?ElevatedButton(
                       onPressed: _checkBiometricAndAuthenticate,
                       child: const Text('Biometric Login'),
-                    ),
+                    )
+                    :Text(''),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(

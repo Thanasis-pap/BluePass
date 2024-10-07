@@ -163,6 +163,7 @@ class _EditPassword extends State<EditPassword> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 10),
                     TextFormField(
                       controller: nameController,
                       keyboardType: TextInputType.emailAddress,

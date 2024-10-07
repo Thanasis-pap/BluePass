@@ -80,8 +80,9 @@ class _registerPageState extends State<RegisterPage> {
                   children: [
                     Image.asset(
                       'assets/logo.png',
-                      width: 30,
+                      width: 45,
                     ),
+                    const SizedBox(height: 5),
                     Text(
                       'BluePass',
                       style:

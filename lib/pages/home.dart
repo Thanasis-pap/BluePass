@@ -1,5 +1,7 @@
 import 'package:passwordmanager/global_dirs.dart';
 
+import '../widgets/search.dart';
+
 class MyHomePage extends StatefulWidget {
   static final ValueNotifier<ThemeMode> themeNotifier =
       ValueNotifier(ThemeMode.light);
@@ -18,15 +20,42 @@ class _MyHomePageState extends State<MyHomePage> {
   final dbHelper = DatabaseHelper();
   List<Map<String, dynamic>?> recentItems = [];
   List<Map<String, dynamic>?> favorItems = [];
+  List<Map<String, dynamic>> searchItems = [];
+  List<Map<String, dynamic>> filteredItems = [];
+  TextEditingController searchController = TextEditingController();
 
   String user = Global.user[1];
   bool showOptions = false;
   IconData fab_icon = Icons.add;
 
-  void getParams() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> fetchAllItems() async {
+    List<Map<String, dynamic>> cards = (await dbHelper.getCards())
+        .where((item) => item != null)
+        .cast<Map<String, dynamic>>()
+        .toList();
+
+    List<Map<String, dynamic>> passwords = (await dbHelper.getPasswords())
+        .where((item) => item != null)
+        .cast<Map<String, dynamic>>()
+        .toList();
+
     setState(() {
-      Global.noPassword = (prefs.getBool('noPassword') ?? true);
+      searchItems = [...cards, ...passwords]; // Combine cards and passwords
+      //filteredItems = searchItems; // Initially show all items
+    });
+  }
+
+  // Filter search results based on the input text
+  void filterItems(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredItems = []; // Clear the list if the search query is empty
+      } else {
+        filteredItems = searchItems.where((item) {
+          final itemName = item['name'].toLowerCase();
+          return itemName.contains(query.toLowerCase());
+        }).toList();
+      }
     });
   }
 
@@ -100,26 +129,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void reset() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    //Global.firstTime = true;
-    setState(() {
-      (prefs.setBool('noPassword', Global.noPassword));
-    });
-  }
-
-  void setBool(bool firstTime) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setBool('firstTime', firstTime);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     fetchRecentItems();
     fetchFavoriteItems();
+    fetchAllItems();
   }
 
   int currentPageIndex = 0;
@@ -297,6 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       password: item)))
                                           .then((context) {
                                         setState(() {
+                                          fetchAllItems();
                                           fetchFavoriteItems();
                                           fetchRecentItems();
                                         });
@@ -310,6 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       CardPage(card: item)))
                                           .then((context) {
                                         setState(() {
+                                          fetchAllItems();
                                           fetchFavoriteItems();
                                           fetchRecentItems();
                                         });
@@ -374,153 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
               ),
               const SizedBox(height: 10),
-              GridView.count(
-                primary: false,
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(0),
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                crossAxisCount: 2,
-                childAspectRatio: (10 / 7),
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF160679),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25), // <-- Radius
-                      ),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      // Center the content in the button
-                      children: [
-                        // Faded, scaled background icon
-                        Icon(
-                          Icons.password_rounded,
-                          size: 50,
-                          color: Color(0xFF3F7BD7),
-                        ),
-                        // Text on top of the button
-                        Text(
-                          'Password Generator',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white // Text color
-                              ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF3F7BD7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25), // <-- Radius
-                      ),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      // Center the content in the button
-                      children: [
-                        // Faded, scaled background icon
-                        Icon(
-                          Icons.stacked_bar_chart_rounded,
-                          size: 50,
-                          color: Color(0xFF160679),
-                        ),
-                        // Text on top of the button
-                        Text(
-                          'Password Strength Check',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // Text color
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF3F7BD7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25), // <-- Radius
-                      ),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      // Center the content in the button
-                      children: [
-                        // Faded, scaled background icon
-                        Icon(
-                          Icons.arrow_upward_rounded,
-                          size: 50,
-                          color: Color(0xFF160679),
-                        ),
-                        // Text on top of the button
-                        Text(
-                          'Export Passwords',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white // Text color
-                              ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF160679),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25), // <-- Radius
-                      ),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      // Center the content in the button
-                      children: [
-                        // Faded, scaled background icon
-                        Icon(
-                          Icons.arrow_downward_rounded,
-                          size: 50,
-                          color: Color(0xFF3F7BD7),
-                        ),
-                        // Text on top of the button
-                        Text(
-                          'Import Passwords',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // Text color
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              Tools.tools(context),
               const SizedBox(height: 20),
               Text(
                 'Recent',
@@ -569,6 +440,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   onPressed: () {
                                     fetchFavoriteItems();
                                     fetchRecentItems();
+                                    fetchAllItems();
                                     if (item != null) {
                                       item['type'] == 'password'
                                           ? Navigator.push(
@@ -587,17 +459,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                     padding: EdgeInsets.zero,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
-                                          15), // <-- Radius
+                                          20), // <-- Radius
                                     ),
                                   ),
                                   child: ListTile(
-                                    contentPadding:
-                                        const EdgeInsets.fromLTRB(10, 0, 20, 0),
                                     title: Text(
                                       overflow: TextOverflow.ellipsis,
                                       item?['name'],
                                       style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 18,
                                         //fontWeight: FontWeight.bold,
                                         //color: Colors.white, // Text color
                                       ),
@@ -624,19 +494,140 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-              child: Text(
-                'Search',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+        Column(
+            //direction: Axis.vertical,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                child: Text(
+                  'Search',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    filterItems(value); // Filter items based on search input
+                  },
+                  decoration: InputDecoration(
+                    label: const Text(
+                      'Search passwords or cards',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+              filteredItems.isEmpty
+                  ? Align(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 50.0),
+                        child: Text(
+                          'Type to search', // Initial message
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    )
+                  : Expanded(
+                      child: filteredItems.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: filteredItems.length,
+                              itemBuilder: (context, index) {
+                                Map<String, dynamic> item =
+                                    filteredItems[index];
+                                bool isCard = item.containsKey(
+                                    'card_number'); // Assuming card has 'card_number'
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 20.0),
+                                  child: SizedBox(
+                                    height: 65,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        // If it's a card, handle card click
+                                        if (isCard) {
+                                          Recent.openCard(item['id']);
+                                          Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          CardPage(card: item)))
+                                              .then((context) {
+                                            setState(() {
+                                              fetchFavoriteItems();
+                                              fetchRecentItems();
+                                              fetchAllItems();
+                                            });
+                                          });
+                                          // Navigate to card details or handle another action
+                                        } else {
+                                          Recent.openPassword(item['id']);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) => PasswordPage(
+                                                      password: item))).then(
+                                              (context) {
+                                            setState(() {
+                                              fetchFavoriteItems();
+                                              fetchRecentItems();
+                                              fetchAllItems();
+                                            });
+                                          });
+                                          // Navigate to password details or handle another action
+                                        }
+                                      },
+                                      child: ListTile(
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                0, 0, 20, 0),
+                                        title: Text(
+                                          item['name'], // Display name
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        leading: isCard
+                                            ? const Icon(
+                                                Icons.credit_card_rounded,
+                                                size: 40,
+                                              )
+                                            : const Icon(
+                                                Icons.lock_rounded,
+                                                size: 40,
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : const Center(
+                              child: Text('No results found'),
+                            ),
+                    ),
+            ]),
         ListView(
           children: [
             Padding(
@@ -665,6 +656,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ))).then((value) {
                       fetchFavoriteItems();
                       fetchRecentItems();
+                      fetchAllItems();
                     });
                   },
                   style: ElevatedButton.styleFrom(
@@ -722,6 +714,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ))).then((value) {
                       fetchRecentItems();
                       fetchFavoriteItems();
+                      fetchAllItems();
                     });
                   },
                   style: ElevatedButton.styleFrom(
@@ -770,17 +763,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-              child: Text(
-                'Settings',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ),
-          ],
+          children: Settings.settingsCategories(context),
         ),
       ][currentPageIndex],
     );

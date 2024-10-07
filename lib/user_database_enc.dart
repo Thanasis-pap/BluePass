@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:passwordmanager/tools/aes_helper.dart';  // Assuming you have this AESHelper class for encryption
+import 'package:passwordmanager/helpers/aes_helper.dart';  // Assuming you have this AESHelper class for encryption
 
 class UserDatabaseHelper {
   static final UserDatabaseHelper _instance = UserDatabaseHelper._internal();

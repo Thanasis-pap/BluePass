@@ -1,7 +1,7 @@
 import 'package:passwordmanager/global_dirs.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
-import 'package:passwordmanager/pages/home.dart';
-import 'package:passwordmanager/tools/input_formatter.dart';
+
+import 'package:passwordmanager/helpers/input_formatter.dart';
 
 class EditCard extends StatefulWidget {
   final String title;
