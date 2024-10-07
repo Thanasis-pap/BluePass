@@ -535,9 +535,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? Align(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 50.0),
-                        child: Text(
-                          'Type to search', // Initial message
-                          style: TextStyle(fontSize: 18),
+                        child: Column(
+                          children: [
+                            Icon(Icons.search_off_rounded,size: 40,),
+                            SizedBox(height: 10,),
+                            Text(
+                              'Nothing here yet.', // Initial message
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ],
                         ),
                       ),
                     )

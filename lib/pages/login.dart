@@ -17,86 +17,20 @@ class _LoginPageState extends State<LoginPage> {
   void loginUser() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      final user = await dbHelper.loginUser(_email, _password);
-
-      if (user != null) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          style: ToastificationStyle.flat,
-          alignment: Alignment.bottomCenter,
-          showProgressBar: false,
-          title: const Text('Login Successful'),
-          autoCloseDuration: const Duration(seconds: 3),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyHomePage(
-              title: user['name'],
-            ),
-          ),
-        );
-      } else {
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          style: ToastificationStyle.flat,
-          alignment: Alignment.bottomCenter,
-          showProgressBar: false,
-          title: const Text('Invalid Email or Password'),
-          autoCloseDuration: const Duration(seconds: 3),
-        );
-      }
-    }
-  }
-
-  // Check if biometric authentication is available and authenticate
-  Future<void> _checkBiometricAndAuthenticate() async {
-    bool isAvailable = await biometricHelper.isBiometricAvailable();
-    if (isAvailable) {
-      bool isAuthenticated = await biometricHelper.authenticateUser();
-      if (isAuthenticated) {
-        // Proceed with login or access to secured parts of the app
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          style: ToastificationStyle.flat,
-          alignment: Alignment.bottomCenter,
-          showProgressBar: false,
-          title: const Text('Login Successful'),
-          autoCloseDuration: const Duration(seconds: 3),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyHomePage(
-              title: 'there',
-            ),
-          ),
-        );
-      } else {
-        // Show an error or allow fallback to password-based login
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          style: ToastificationStyle.flat,
-          alignment: Alignment.bottomCenter,
-          showProgressBar: false,
-          title: const Text('Authentication Failed'),
-          autoCloseDuration: const Duration(seconds: 3),
-        );
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPassword(),
+        ),
+      );
     } else {
-      // Fallback if biometrics are not available
       toastification.show(
         context: context,
         type: ToastificationType.error,
         style: ToastificationStyle.flat,
         alignment: Alignment.bottomCenter,
         showProgressBar: false,
-        title: const Text('Biometric authentication not available.'),
+        title: const Text('Invalid Username'),
         autoCloseDuration: const Duration(seconds: 3),
       );
     }
@@ -138,12 +72,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 62),
+                    const SizedBox(height: 60),
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        label: const Text('Email'),
-                        prefixIcon: const Icon(Icons.email),
+                        label: const Text('Username'),
+                        prefixIcon: const Icon(Icons.account_circle_rounded),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
@@ -151,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      onSaved: (value) => _email = value!,
+                      onSaved: (value) => Global.username = value!,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
@@ -159,39 +93,12 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        label: const Text('Password'),
-                        prefixIcon: const Icon(Icons.lock),
-                        filled: true,
-                        //fillColor: Colors.grey[200],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      onSaved: (value) => _password = value!,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: loginUser,
-                      child: const Text('Login'),
+                      child: const Text('Next'),
                     ),
                     const SizedBox(height: 10),
-                    Global.auth
-                    ?ElevatedButton(
-                      onPressed: _checkBiometricAndAuthenticate,
-                      child: const Text('Biometric Login'),
-                    )
-                    :Text(''),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(

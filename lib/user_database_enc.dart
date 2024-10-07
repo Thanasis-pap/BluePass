@@ -78,4 +78,20 @@ class UserDatabaseHelper {
 
     return null;  // Login failed
   }
+
+  Future<bool> loginBiometric(String email, String password) async {
+    final db = await database;
+
+    // Encrypt the email to match the one stored in the database
+    String encryptedEmail = await _aesHelper.encryptText(email);
+
+    // Fetch the user by encrypted email
+    final result = await db.query('users', where: 'email = ?', whereArgs: [encryptedEmail]);
+
+    if (result.isNotEmpty) {
+      return true;
+    }
+
+    return false;  // Login failed
+  }
 }

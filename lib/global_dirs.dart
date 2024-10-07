@@ -36,10 +36,12 @@ export 'package:passwordmanager/pages/settings/general.dart';
 export 'package:passwordmanager/pages/settings/account.dart';
 export 'package:passwordmanager/widgets/settings.dart';
 export 'package:passwordmanager/widgets/tools.dart';
+export 'package:passwordmanager/pages/login_password.dart';
 
 class Global {
   static List<Map<String, dynamic>?> recentItems = [];
   static List<Map<String, dynamic>?> favorItems = [];
+  static String username = '';
   static double fontSize = 18;
   static bool auth = true;
   static String initialRoute = "/login";

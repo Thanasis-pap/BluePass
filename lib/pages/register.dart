@@ -122,8 +122,8 @@ class _registerPageState extends State<RegisterPage> {
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        label: const Text('Email'),
-                        prefixIcon: const Icon(Icons.email),
+                        label: const Text('Username'),
+                        prefixIcon: const Icon(Icons.account_circle_rounded),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
@@ -134,8 +134,9 @@ class _registerPageState extends State<RegisterPage> {
                       onSaved: (value) => _email = value!,
                       validator: (value) {
                         if (value == null ||
-                            !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                          return 'Please enter a valid email';
+                            value.isEmpty ||
+                            value.length < 8) {
+                          return 'Please enter a valid Username';
                         }
                         return null;
                       },
@@ -179,11 +180,6 @@ class _registerPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
                       onPressed: registerUser,
                       child: const Text('Register'),
                     ),
