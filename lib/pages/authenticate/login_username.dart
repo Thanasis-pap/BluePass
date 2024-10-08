@@ -9,18 +9,18 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  String _email = '';
-  String _password = '';
   final dbHelper = UserDatabaseHelper();
+  final _passwordController = TextEditingController();
   final BiometricHelper biometricHelper = BiometricHelper();
 
   void loginUser() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && await dbHelper.loginBiometric(_passwordController.text)) {
       _formKey.currentState!.save();
-      Navigator.pushReplacement(
+      FocusManager.instance.primaryFocus?.unfocus();
+      Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => LoginPassword(),
+        LeftPageRoute(
+          page: LoginPassword(),
         ),
       );
     } else {
@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                     Column(
                       children: [
                         Image.asset(
-                          'assets/logo.png',
+                          'assets/password.png',
                           width: 60,
                         ),
                         const SizedBox(height: 10),
@@ -74,21 +74,21 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 60),
                     TextFormField(
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         label: const Text('Username'),
                         prefixIcon: const Icon(Icons.account_circle_rounded),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
                       onSaved: (value) => Global.username = value!,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return 'Please enter your Username';
                         }
                         return null;
                       },
@@ -101,11 +101,12 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const RegisterPage()));
+                        Navigator.of(context).pushAndRemoveUntil(
+                            LeftPageRoute(
+                                page: const RegisterPage()),
+                                (Route<dynamic> route) => false);
                       },
+
                       child: const Text('No account? Register'),
                     ),
                   ],

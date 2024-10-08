@@ -79,7 +79,7 @@ class UserDatabaseHelper {
     return null;  // Login failed
   }
 
-  Future<bool> loginBiometric(String email, String password) async {
+  Future<bool> loginBiometric(String email) async {
     final db = await database;
 
     // Encrypt the email to match the one stored in the database
@@ -93,5 +93,17 @@ class UserDatabaseHelper {
     }
 
     return false;  // Login failed
+  }
+
+  Future<Map<String, Object?>> loginName(String username) async {
+    final db = await database;
+
+    // Encrypt the email to match the one stored in the database
+    String encryptedEmail = await _aesHelper.encryptText(username);
+
+    // Fetch the user by encrypted email
+    final result = await db.query('users', where: 'email = ?', whereArgs: [encryptedEmail]);
+
+    return result[0];  // Login failed
   }
 }

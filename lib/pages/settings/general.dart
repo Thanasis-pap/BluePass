@@ -65,7 +65,7 @@ class _GeneralSettings extends State<GeneralSettings> {
   void getParams() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      Global.auth = (prefs.getBool('auth') ?? true);
+      Global.auth = (prefs.getBool('auth') ?? false);
     });
   }
 

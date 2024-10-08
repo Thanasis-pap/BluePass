@@ -6,7 +6,7 @@ void main() async {
 
   final secureKeyStorage = SecureKeyStorage();
   final aesHelper = AESHelper();
-
+  await FlutterDisplayMode.setHighRefreshRate();
   // Check if the AES key is already stored
   String? existingKey = await secureKeyStorage.retrieveKey();
   if (existingKey == null) {

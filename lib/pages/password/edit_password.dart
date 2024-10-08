@@ -29,7 +29,8 @@ class _EditPassword extends State<EditPassword> {
     'username': '',
     'password': '',
     'notes': '',
-    'color': '', // Example color
+    'color': '',
+    'favorite': false,// Example color
   };
 
   Color dialogPickerColor = Colors.blue.shade600;
@@ -175,7 +176,7 @@ class _EditPassword extends State<EditPassword> {
                         prefixIcon: const Icon(Icons.web_rounded),
                         filled: true,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -198,7 +199,7 @@ class _EditPassword extends State<EditPassword> {
                         prefixIcon: const Icon(Icons.web_asset_rounded),
                         filled: true,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -229,7 +230,7 @@ class _EditPassword extends State<EditPassword> {
                         prefixIcon: const Icon(Icons.account_box_rounded),
                         filled: true,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -264,7 +265,7 @@ class _EditPassword extends State<EditPassword> {
                         prefixIcon: const Icon(Icons.web_asset_rounded),
                         filled: true,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -291,7 +292,7 @@ class _EditPassword extends State<EditPassword> {
                           ),
                           filled: true,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -303,19 +304,21 @@ class _EditPassword extends State<EditPassword> {
                     ),
                     ListTile(
                       contentPadding: const EdgeInsets.fromLTRB(45, 0, 20, 0),
-                      title: Text(
+                      title: const Text(
                         'Color',
                         style: TextStyle(fontSize: 18),
                       ),
                       trailing: ColorIndicator(
-                        width: 44,
-                        height: 44,
+                        width: 33,
+                        height: 33,
                         borderRadius: 22,
                         color: dialogPickerColor,
                         onSelectFocus: false,
                         onSelect: () async {
                           // Store current color before we open the dialog.
                           final Color colorBeforeDialog = dialogPickerColor;
+                          Global.password['color'] =
+                              dialogPickerColor.value.toString();
                           // Wait for the picker to close, if dialog was dismissed,
                           // then restore the color we had before it was opened.
                           if (!(await colorPickerDialog())) {

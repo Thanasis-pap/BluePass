@@ -24,9 +24,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, dynamic>> filteredItems = [];
   TextEditingController searchController = TextEditingController();
 
-  String user = Global.user[1];
+  //String user = Global.user[1];
   bool showOptions = false;
-  IconData fab_icon = Icons.add;
+  IconData fabIcon = Icons.add;
 
   Future<void> fetchAllItems() async {
     List<Map<String, dynamic>> cards = (await dbHelper.getCards())
@@ -122,9 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       showOptions = !showOptions;
       if (showOptions == false) {
-        fab_icon = Icons.add;
+        fabIcon = Icons.add;
       } else {
-        fab_icon = Icons.close;
+        fabIcon = Icons.close;
       }
     });
   }
@@ -154,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Row(
           children: [
-            Image.asset('assets/logo.png', width: 30),
+            Image.asset('assets/password.png', width: 30),
             SizedBox(
               width: 15,
             ),
@@ -174,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         childrenAnimation: ExpandableFabAnimation.none,
         distance: 70,
         overlayStyle: ExpandableFabOverlayStyle(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
         ),
         children: [
           Row(
@@ -190,6 +190,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (_) => const EditCard(
                               title: "New Card", data: null))).then((value) {
                     fetchFavoriteItems();
+                    fetchRecentItems();
+                    fetchAllItems();
                   });
                   final state = _key.currentState;
                   if (state != null) {
@@ -211,10 +213,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => const EditPassword(
-                                title: "New Password",
-                                data: null,
-                              ))).then((value) {
+                              title: "New Password",
+                              data: null))).then((value) {
                     fetchFavoriteItems();
+                    fetchRecentItems();
+                    fetchAllItems();
                   });
                   final state = _key.currentState;
                   if (state != null) {
@@ -442,17 +445,35 @@ class _MyHomePageState extends State<MyHomePage> {
                                     fetchRecentItems();
                                     fetchAllItems();
                                     if (item != null) {
-                                      item['type'] == 'password'
-                                          ? Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) => PasswordPage(
-                                                      password: item)))
-                                          : Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      CardPage(card: item)));
+                                      if (item['type'] == 'password') {
+                                        Recent.openPassword(item['id']);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => PasswordPage(
+                                                    password: item))).then(
+                                            (context) {
+                                          setState(() {
+                                            fetchAllItems();
+                                            fetchFavoriteItems();
+                                            fetchRecentItems();
+                                          });
+                                        });
+                                      } else {
+                                        Recent.openCard(item['id']);
+                                        Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CardPage(card: item)))
+                                            .then((context) {
+                                          setState(() {
+                                            fetchAllItems();
+                                            fetchFavoriteItems();
+                                            fetchRecentItems();
+                                          });
+                                        });
+                                      }
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -537,8 +558,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.symmetric(vertical: 50.0),
                         child: Column(
                           children: [
-                            Icon(Icons.search_off_rounded,size: 40,),
-                            SizedBox(height: 10,),
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 40,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
                             Text(
                               'Nothing here yet.', // Initial message
                               style: TextStyle(fontSize: 18),

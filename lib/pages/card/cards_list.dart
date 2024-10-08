@@ -92,7 +92,7 @@ class _CardList extends State<CardsList> {
                                   child: Text('Cancel',
                                       style: TextStyle(fontSize: Global.fontSize)),
                                 ),
-                                TextButton(
+                                ElevatedButton(
                                   onPressed: () {
                                     deleteSelectedCards();
                                     toastification.show(

@@ -1,4 +1,5 @@
 import 'dart:collection';
+
 import 'global_dirs.dart';
 export 'package:flutter/services.dart';
 export 'package:after_layout/after_layout.dart';
@@ -15,18 +16,21 @@ export 'package:url_launcher/url_launcher.dart';
 export 'package:toastification/toastification.dart';
 export 'package:fluttertoast/fluttertoast.dart';
 export 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+export 'package:password_strength_checker/password_strength_checker.dart';
+export 'package:flutter_displaymode/flutter_displaymode.dart';
 
+export 'package:passwordmanager/helpers/password_check.dart';
 export 'package:passwordmanager/helpers/biometric_helper.dart';
 export 'package:passwordmanager/widgets/title.dart';
-export 'package:passwordmanager/pages/login.dart';
-export 'package:passwordmanager/pages/register.dart';
+export 'package:passwordmanager/pages/authenticate/login_username.dart';
+export 'package:passwordmanager/pages/authenticate/register.dart';
 export 'package:passwordmanager/pages/home.dart';
 export 'package:passwordmanager/pages/password/password.dart';
 export 'package:passwordmanager/pages/card/card.dart';
 export 'package:passwordmanager/pages/password/edit_password.dart';
-export 'package:passwordmanager/user_database_enc.dart';
+export 'package:passwordmanager/db/user_database_enc.dart';
 export 'package:passwordmanager/pages/card/edit_card.dart';
-export 'package:passwordmanager/data_enc.dart';
+export 'package:passwordmanager/db/data_enc.dart';
 export 'package:passwordmanager/helpers/secure_storage.dart';
 export 'package:passwordmanager/helpers/aes_helper.dart';
 export 'package:passwordmanager/pages/card/cards_list.dart';
@@ -36,26 +40,30 @@ export 'package:passwordmanager/pages/settings/general.dart';
 export 'package:passwordmanager/pages/settings/account.dart';
 export 'package:passwordmanager/widgets/settings.dart';
 export 'package:passwordmanager/widgets/tools.dart';
-export 'package:passwordmanager/pages/login_password.dart';
+export 'package:passwordmanager/pages/authenticate/login_password.dart';
+export 'package:passwordmanager/pages/temporary.dart';
+export 'package:passwordmanager/helpers/fade_helper.dart';
+export 'package:passwordmanager/pages/tools/generator.dart';
+export 'package:passwordmanager/pages/tools/checker.dart';
 
 class Global {
   static List<Map<String, dynamic>?> recentItems = [];
   static List<Map<String, dynamic>?> favorItems = [];
   static String username = '';
   static double fontSize = 18;
-  static bool auth = true;
+  static bool auth = false;
   static String initialRoute = "/login";
   static Queue<int> recent = Queue<int>();
   static List<int> recentCards = [];
   static List<int> recentPasswords = [];
-  static List<String> user = ['example@email.com', 'Name', 'Password'];
+  static String name = 'Congratulations!!! You found the Easter Egg!!!';
   static Map<String, dynamic> password = {
     'name': '',
     'webpage': '',
     'username': '',
     'password': '',
     'notes': '',
-    'color': '',
+    'color': Colors.blue.shade600.value.toString(),
     'favorite': false,
   };
   static Map<String, dynamic> card = {
@@ -65,7 +73,7 @@ class Global {
     'expiration_date': '',
     'cvv': '',
     'notes': '',
-    'color': '',
+    'color': Colors.blue.shade600.value.toString(),
     'favorite': false,
   };
 }

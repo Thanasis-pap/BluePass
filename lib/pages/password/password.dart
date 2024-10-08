@@ -121,10 +121,15 @@ class _PasswordPage extends State<PasswordPage> {
                               Clipboard.setData(ClipboardData(
                                 text: Global.password['username'],
                               )).then((_) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Copied to your clipboard')));
+                                toastification.show(
+                                  context: context,
+                                  type: ToastificationType.success,
+                                  style: ToastificationStyle.flat,
+                                  alignment: Alignment.bottomCenter,
+                                  showProgressBar: false,
+                                  title: const Text('Username copied.'),
+                                  autoCloseDuration: const Duration(milliseconds: 1500),
+                                );
                               });
                             },
                           ),
@@ -168,10 +173,15 @@ class _PasswordPage extends State<PasswordPage> {
                               Clipboard.setData(ClipboardData(
                                       text: Global.password['password']))
                                   .then((_) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Copied to your clipboard !')));
+                                toastification.show(
+                                  context: context,
+                                  type: ToastificationType.success,
+                                  style: ToastificationStyle.flat,
+                                  alignment: Alignment.bottomCenter,
+                                  showProgressBar: false,
+                                  title: const Text('Password copied.'),
+                                  autoCloseDuration: const Duration(milliseconds: 1500),
+                                );
                               });
                             },
                           ),

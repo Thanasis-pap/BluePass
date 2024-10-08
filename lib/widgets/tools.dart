@@ -12,7 +12,14 @@ class Tools {
       childAspectRatio: (10 / 7),
       children: <Widget>[
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Generator(),
+              ),
+            );
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF160679),
             shape: RoundedRectangleBorder(
@@ -46,7 +53,14 @@ class Tools {
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Checker(),
+              ),
+            );
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Color(0xFF3F7BD7),
             shape: RoundedRectangleBorder(
@@ -80,7 +94,14 @@ class Tools {
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Temporary(),
+              ),
+            );
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Color(0xFF3F7BD7),
             shape: RoundedRectangleBorder(
@@ -114,7 +135,14 @@ class Tools {
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Temporary(),
+              ),
+            );
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Color(0xFF160679),
             shape: RoundedRectangleBorder(

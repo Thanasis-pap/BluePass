@@ -198,7 +198,7 @@ class _EditCard extends State<EditCard> {
                       controller: nameController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        label: Text(
+                        label: const Text(
                           'Bank Name',
                           style: TextStyle(fontSize: 18),
                         ),
@@ -420,6 +420,8 @@ class _EditCard extends State<EditCard> {
                         onSelect: () async {
                           // Store current color before we open the dialog.
                           final Color colorBeforeDialog = dialogPickerColor;
+                          Global.card['color'] =
+                              dialogPickerColor.value.toString();
                           // Wait for the picker to close, if dialog was dismissed,
                           // then restore the color we had before it was opened.
                           if (!(await colorPickerDialog())) {

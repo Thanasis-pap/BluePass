@@ -98,7 +98,7 @@ class Settings {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => GeneralSettings()));
+                      builder: (_) => Temporary()));
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.zero,

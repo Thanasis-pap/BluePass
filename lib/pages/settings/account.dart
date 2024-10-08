@@ -51,7 +51,14 @@ class _AccountSettings extends State<AccountSettings> {
           child: SizedBox(
             height: 80,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Temporary(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius:
@@ -76,7 +83,14 @@ class _AccountSettings extends State<AccountSettings> {
           child: SizedBox(
             height: 80,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Temporary(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius:
@@ -102,18 +116,42 @@ class _AccountSettings extends State<AccountSettings> {
             height: 70,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const LoginPage()));
-                toastification.show(
+                showDialog<String>(
                   context: context,
-                  type: ToastificationType.success,
-                  style: ToastificationStyle.flat,
-                  alignment: Alignment.bottomCenter,
-                  showProgressBar: false,
-                  title: const Text('Logged Out Successfully'),
-                  autoCloseDuration: const Duration(seconds: 3),
+                  builder: (BuildContext context) => AlertDialog(
+                    title:
+                        const Text('Warning', style: TextStyle(fontSize: 28)),
+                    content: const Text('Are you sure you want to log out?',
+                        style: TextStyle(fontSize: 18)),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, 'Cancel');
+                        },
+                        child: Text('Cancel',
+                            style: TextStyle(fontSize: Global.fontSize)),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          toastification.show(
+                            context: context,
+                            style: ToastificationStyle.flat,
+                            alignment: Alignment.bottomCenter,
+                            showProgressBar: false,
+                            title: const Text('Logged out successfully.'),
+                            autoCloseDuration: const Duration(seconds: 2),
+                          );
+                          Navigator.pop(context, 'Yes');
+                          Navigator.of(context).pushAndRemoveUntil(
+                              LeftPageRoute(
+                                  page: const LoginPage()),
+                                  (Route<dynamic> route) => false);
+                        },
+                        child: Text('Yes',
+                            style: TextStyle(fontSize: Global.fontSize)),
+                      ),
+                    ],
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(

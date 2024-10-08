@@ -121,10 +121,15 @@ class _CardPage extends State<CardPage> {
                                 Clipboard.setData(ClipboardData(
                                         text: Global.card['card_number']))
                                     .then((_) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Copied to your clipboard')));
+                                  toastification.show(
+                                    context: context,
+                                    type: ToastificationType.success,
+                                    style: ToastificationStyle.flat,
+                                    alignment: Alignment.bottomCenter,
+                                    showProgressBar: false,
+                                    title: const Text('Copied successfully.'),
+                                    autoCloseDuration: const Duration(milliseconds: 1500),
+                                  );
                                 });
                               },
                             ),
@@ -156,10 +161,15 @@ class _CardPage extends State<CardPage> {
                                         text: Global.card['card_holder']
                                             .replaceAll('_', ' ')))
                                     .then((_) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Copied to your clipboard')));
+                                  toastification.show(
+                                    context: context,
+                                    type: ToastificationType.success,
+                                    style: ToastificationStyle.flat,
+                                    alignment: Alignment.bottomCenter,
+                                    showProgressBar: false,
+                                    title: const Text('Copied successfully.'),
+                                    autoCloseDuration: const Duration(milliseconds: 1500),
+                                  );
                                 });
                               },
                             ),
@@ -194,10 +204,15 @@ class _CardPage extends State<CardPage> {
                                             text:
                                                 Global.card['expiration_date']))
                                         .then((_) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Copied to your clipboard')));
+                                      toastification.show(
+                                        context: context,
+                                        type: ToastificationType.success,
+                                        style: ToastificationStyle.flat,
+                                        alignment: Alignment.bottomCenter,
+                                        showProgressBar: false,
+                                        title: const Text('Copied successfully.'),
+                                        autoCloseDuration: const Duration(milliseconds: 1500),
+                                      );
                                     });
                                   },
                                 ),
@@ -225,10 +240,15 @@ class _CardPage extends State<CardPage> {
                                     Clipboard.setData(ClipboardData(
                                             text: Global.card['cvv']))
                                         .then((_) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Copied to your clipboard')));
+                                      toastification.show(
+                                        context: context,
+                                        type: ToastificationType.success,
+                                        style: ToastificationStyle.flat,
+                                        alignment: Alignment.bottomCenter,
+                                        showProgressBar: false,
+                                        title: const Text('Copied successfully.'),
+                                        autoCloseDuration: const Duration(milliseconds: 1500),
+                                      );
                                     });
                                   },
                                 ),

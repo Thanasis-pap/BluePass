@@ -4,15 +4,18 @@ class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _registerPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _registerPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   String _email = '';
   String _password = '';
+  bool _isStrong = false;
   final dbHelper = UserDatabaseHelper();
+  final passNotifier = ValueNotifier<PasswordStrength?>(null);
+  final _passwordController = TextEditingController();
 
   void registerUser() async {
     if (_formKey.currentState!.validate()) {
@@ -40,27 +43,15 @@ class _registerPageState extends State<RegisterPage> {
           ),
         );
       } catch (e) {
-        if (e.toString() == 'Exception: Email already exists') {
-          toastification.show(
-            context: context,
-            type: ToastificationType.error,
-            style: ToastificationStyle.flat,
-            alignment: Alignment.bottomCenter,
-            showProgressBar: false,
-            title: const Text('Email already exists'),
-            autoCloseDuration: const Duration(seconds: 3),
-          );
-        } else {
-          toastification.show(
-            context: context,
-            type: ToastificationType.error,
-            style: ToastificationStyle.flat,
-            alignment: Alignment.bottomCenter,
-            showProgressBar: false,
-            title: const Text('Registration Failed'),
-            autoCloseDuration: const Duration(seconds: 3),
-          );
-        }
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          alignment: Alignment.bottomCenter,
+          showProgressBar: false,
+          title: const Text('User already exists'),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
       }
     }
   }
@@ -70,16 +61,16 @@ class _registerPageState extends State<RegisterPage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-           child: SingleChildScrollView(
+          child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Form(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/logo.png',
+                      'assets/password.png',
                       width: 45,
                     ),
                     const SizedBox(height: 5),
@@ -90,23 +81,23 @@ class _registerPageState extends State<RegisterPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                     ),
-                    const SizedBox(height: 32),
+                    /*const SizedBox(height: 32),
                     Text(
                       'Hello, stranger!',
                       style:
                           Theme.of(context).textTheme.headlineLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
-                    ),
+                    ),*/
                     const SizedBox(height: 32),
                     TextFormField(
                       decoration: InputDecoration(
                         label: const Text('Name'),
                         filled: true,
-                        prefixIcon: const Icon(Icons.account_box_rounded),
+                        prefixIcon: const Icon(Icons.account_circle_rounded),
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -127,7 +118,7 @@ class _registerPageState extends State<RegisterPage> {
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -135,8 +126,8 @@ class _registerPageState extends State<RegisterPage> {
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
-                            value.length < 8) {
-                          return 'Please enter a valid Username';
+                            value.length < 6) {
+                          return 'Please enter a username with 6 characters or more';
                         }
                         return null;
                       },
@@ -144,22 +135,27 @@ class _registerPageState extends State<RegisterPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       obscureText: true,
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         label: const Text('Password'),
                         prefixIcon: const Icon(Icons.lock),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
                       onSaved: (value) => _password = value!,
+                      onChanged: (value) {
+                        passNotifier.value =
+                            PasswordStrength.calculate(text: value);
+                      },
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
-                            value.length < 8) {
-                          return 'Please enter a password with 8 characters or more';
+                            _isStrong == false) {
+                          return 'Please enter a valid password.';
                         }
                         return null;
                       },
@@ -173,22 +169,62 @@ class _registerPageState extends State<RegisterPage> {
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value != _passwordController.text) {
+                          return 'Passwords do not match.';
+                        }
+                        return null;
+                      },
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
+                    PasswordStrengthChecker(
+                      configuration: PasswordStrengthCheckerConfiguration(
+                        inactiveBorderColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                      ),
+                      strength: passNotifier,
+                    ),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: AlignmentDirectional.topStart,
+                      child: Text('Password must contain:'),
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: AlignmentDirectional.topStart,
+                      child: AnimatedBuilder(
+                        animation: _passwordController,
+                        builder: (context, child) {
+                          final password = _passwordController.text;
+
+                          return PasswordChecker(
+                            onStrengthChanged: (bool value) {
+                              setState(() {
+                                _isStrong = value;
+                              });
+                            },
+                            password: password,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: registerUser,
                       child: const Text('Register'),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const LoginPage()));
+                        Navigator.of(context).pushAndRemoveUntil(
+                            LeftPageRoute(page: const LoginPage()),
+                            (Route<dynamic> route) => false);
                       },
                       child: const Text('Already have an account? Login'),
                     ),

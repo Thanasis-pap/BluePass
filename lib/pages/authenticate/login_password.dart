@@ -1,8 +1,6 @@
 import 'package:passwordmanager/global_dirs.dart';
 
 class LoginPassword extends StatefulWidget {
-
-
   const LoginPassword({super.key});
 
   @override
@@ -14,6 +12,7 @@ class _LoginPassword extends State<LoginPassword> {
 
   String password = '';
   final dbHelper = UserDatabaseHelper();
+
   final BiometricHelper biometricHelper = BiometricHelper();
 
   void loginUser() async {
@@ -32,14 +31,13 @@ class _LoginPassword extends State<LoginPassword> {
           title: const Text('Login Successful'),
           autoCloseDuration: const Duration(seconds: 3),
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyHomePage(
-              title: user['name'],
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => MyHomePage(
+                title: user['name'],
+              ),
             ),
-          ),
-        );
+            (Route<dynamic> route) => false);
       } else {
         toastification.show(
           context: context,
@@ -47,7 +45,7 @@ class _LoginPassword extends State<LoginPassword> {
           style: ToastificationStyle.flat,
           alignment: Alignment.bottomCenter,
           showProgressBar: false,
-          title: const Text('Invalid Email or Password'),
+          title: const Text('Invalid Password'),
           autoCloseDuration: const Duration(seconds: 3),
         );
       }
@@ -56,11 +54,12 @@ class _LoginPassword extends State<LoginPassword> {
 
   // Check if biometric authentication is available and authenticate
   Future<void> checkBiometricAndAuthenticate() async {
-    bool userExists = await dbHelper.loginBiometric(Global.username, password);
+    bool userExists = await dbHelper.loginBiometric(Global.username);
     bool isAvailable = await biometricHelper.isBiometricAvailable();
     if (isAvailable) {
       bool isAuthenticated = await biometricHelper.authenticateUser();
       if (isAuthenticated && userExists) {
+        Map <String,dynamic> user = await dbHelper.loginName(Global.username);
         // Proceed with login or access to secured parts of the app
         toastification.show(
           context: context,
@@ -71,14 +70,11 @@ class _LoginPassword extends State<LoginPassword> {
           title: const Text('Login Successful'),
           autoCloseDuration: const Duration(seconds: 3),
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyHomePage(
-              title: 'there',
+        Navigator.of(context).pushAndRemoveUntil(
+            LeftPageRoute(
+              page: MyHomePage(title: user['name']),
             ),
-          ),
-        );
+            (Route<dynamic> route) => false);
       } else {
         // Show an error or allow fallback to password-based login
         toastification.show(
@@ -113,6 +109,11 @@ class _LoginPassword extends State<LoginPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 50,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        scrolledUnderElevation: 0,
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -125,23 +126,26 @@ class _LoginPassword extends State<LoginPassword> {
                   children: [
                     Column(
                       children: [
-                        Image.asset(
-                          'assets/logo.png',
-                          width: 60,
+                        CircleAvatar(
+                          backgroundColor: const Color(0xFF1A32CC),
+                          radius: 30,
+                          child: Text(Global.username[0].capitalize!,style: const TextStyle(fontSize: 25,color: Colors.white)),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         Text(
-                          'BluePass',
+                          Global.username,
                           style: Theme.of(context)
                               .textTheme
-                              .headlineLarge
+                              .headlineSmall
                               ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+
+                              ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 32),
                     TextFormField(
                       obscureText: true,
                       decoration: InputDecoration(
@@ -150,7 +154,7 @@ class _LoginPassword extends State<LoginPassword> {
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -169,17 +173,16 @@ class _LoginPassword extends State<LoginPassword> {
                     ),
                     const SizedBox(height: 10),
                     Global.auth
-                        ?ElevatedButton(
-                      onPressed: checkBiometricAndAuthenticate,
-                      child: const Text('Biometric Login'),
-                    )
-                        :Text(''),
+                        ? ElevatedButton(
+                            onPressed: checkBiometricAndAuthenticate,
+                            child: const Text('Biometric Login'),
+                          )
+                        : Text(''),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const RegisterPage()));
+                        Navigator.of(context).pushAndRemoveUntil(
+                            LeftPageRoute(page: const RegisterPage()),
+                            (Route<dynamic> route) => false);
                       },
                       child: const Text('No account? Register'),
                     ),

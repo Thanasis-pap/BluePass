@@ -92,7 +92,7 @@ class _PasswordsList extends State<PasswordsList> {
                                   child: Text('Cancel',
                                       style: TextStyle(fontSize: Global.fontSize)),
                                 ),
-                                TextButton(
+                                ElevatedButton(
                                   onPressed: () {
                                     deleteSelectedPasswords();
                                     toastification.show(
