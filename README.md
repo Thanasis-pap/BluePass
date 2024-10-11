@@ -1,49 +1,32 @@
 # BluePass Password Manager
 
-A secure and user-friendly **Password Manager** application that allows users to store and manage their passwords and card information safely. Each user's data is encrypted using AES encryption to ensure that sensitive information like passwords and card details are protected.
+### Description
 
-## Features
+**BluePass** is a secure and easy-to-use password manager designed to help you store, organize, and manage your passwords and card information securely. All sensitive data is encrypted using **AES encryption** to protect your privacy, and users can enjoy a streamlined experience with biometric authentication for quick access. The app also supports custom themes to match your preferences.
 
-- **Password Management**: Store, edit, and delete your passwords securely.
-- **Card Management**: Add, edit, and delete your card information.
-- **Encryption**: All sensitive data such as passwords and card information are encrypted using AES encryption.
-- **Biometric Authentication**: Use biometric authentication to secure your data.
-- **Data Export**: Export your data (passwords and cards) to a single encrypted `.db` file stored in the Downloads folder.
-- **Favorites**: Mark passwords and cards as favorites for quick access.
+| ![app_home](https://your-link-here) | ![app_cards](https://your-link-here) | ![app_passwords](https://your-link-here) | ![app_theme](https://your-link-here) |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 
-## Screenshots
+### Requirements
 
-Add your screenshots here to showcase the app's UI and features.
+- Android 9.0 (Pie) or higher
 
----
+### Features
 
-## Installation
+- **Password Management**: Add, edit, and delete your passwords securely.
+- **Card Management**: Store card details like number, expiration date, and CVV.
+- **Encryption**: All data is encrypted with AES encryption for maximum security.
+- **Biometric Authentication**: Secure access using fingerprint or face recognition.
+- **Favorites**: Mark frequently used passwords and cards as favorites.
+- **Data Export**: Export your encrypted data to a `.db` file.
+- **Themes**: Switch between different themes to personalize the app's appearance.
 
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/password-manager.git
-    ```
-   
-2. **Navigate to the project directory**:
-    ```bash
-    cd password-manager
-    ```
+### Instalation
 
-3. **Install dependencies**:
-    Ensure you have Flutter installed. If not, install Flutter from [here](https://flutter.dev/docs/get-started/install).
-
-    Then run:
-    ```bash
-    flutter pub get
-    ```
-
-4. **Run the app**:
-    Connect your mobile device or start an emulator and run:
-    ```bash
-    flutter run
-    ```
-
----
+1. Download the latest release from the [Releases](https://github.com/your-username/BluePass/releases/) page.
+2. Install **BluePass** on your device.
+3. Set up your master password and optionally enable biometric authentication.
+4. Start adding and organizing your passwords and cards.
 
 ## Usage
 
@@ -66,16 +49,10 @@ Add your screenshots here to showcase the app's UI and features.
 - **Encryption**: The app uses AES encryption to protect all sensitive information stored in the database.
 - **Biometric Authentication**: Users can enable biometric login for additional security.
 
----
+### Disclaimer
 
-## Project Structure
+**BluePass** is designed to help you securely manage passwords and card details. It is not responsible for lost or compromised data due to improper use. Always ensure your master password is strong and securely stored.
 
-```bash
-lib/
-├── main.dart               # The entry point of the application
-├── models/                 # Contains data models (Password, Card)
-├── services/               # Contains encryption and database services
-├── screens/                # All the UI screens
-├── global_dirs.dart        # Contains the global directories for storage
-├── helpers/                # AES encryption helpers
-└── widgets/                # Custom reusable widgets
+### License
+
+This app is licensed under the MIT License. See [LICENSE](https://github.com/your-username/BluePass/blob/main/LICENSE) for details.
