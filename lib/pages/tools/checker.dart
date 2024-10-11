@@ -12,7 +12,7 @@ class _Checker extends State<Checker> {
   final _passwordController = TextEditingController();
   int length = 12;
   bool _isStrong = false;
-  var _obscureText = false;
+  final _obscureText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _Checker extends State<Checker> {
                         const Row(
                           children: [
                             Text(
-                              'Password contains at least:',
+                              'Password contains:',
                               style: TextStyle(fontSize: 18),
                             ),
                           ],
@@ -99,7 +99,7 @@ class _Checker extends State<Checker> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 const Text(
                   'Enter your password here:',
                   style: TextStyle(fontSize: 20),

@@ -4,7 +4,7 @@ class Heading {
   static Widget title(BuildContext context,String text) {
     return Container(
       padding: const EdgeInsets.all(5.0),
-      width: Global.fontSize * 10,
+      width: 28,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Theme.of(context).highlightColor,
@@ -12,7 +12,7 @@ class Heading {
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: Global.fontSize),
+        style: TextStyle(fontSize: 18),
       ),
     );
   }

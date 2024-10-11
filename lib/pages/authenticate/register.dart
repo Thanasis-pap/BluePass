@@ -10,9 +10,11 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
-  String _email = '';
+  String _username = '';
   String _password = '';
   bool _isStrong = false;
+  bool passwordVisible = true;
+  bool repeatPasswordVisible = true;
   final dbHelper = UserDatabaseHelper();
   final passNotifier = ValueNotifier<PasswordStrength?>(null);
   final _passwordController = TextEditingController();
@@ -23,8 +25,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
       try {
         // Insert the user data into the database
-        await dbHelper.registerUser(_name, _email, _password);
-
+        await dbHelper.registerUser(_name, _username, _password);
+        Map<String, dynamic> user = await dbHelper.loginName(_username);
+        DatabaseHelper().setUser(user['id'].toString());
+        Global.username = _username;
+        Global.name = _name;
         toastification.show(
           context: context,
           type: ToastificationType.success,
@@ -39,7 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => MyHomePage(title: _name),
+            builder: (context) => MyHomePage(),
           ),
         );
       } catch (e) {
@@ -89,12 +94,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                     ),*/
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 30),
                     TextFormField(
+                      maxLength: 20,
+                      keyboardType: TextInputType.text,
                       decoration: InputDecoration(
                         label: const Text('Name'),
                         filled: true,
-                        prefixIcon: const Icon(Icons.account_circle_rounded),
+                        prefixIcon: const Icon(Icons.title_rounded),
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -104,17 +111,16 @@ class _RegisterPageState extends State<RegisterPage> {
                       onSaved: (value) => _name = value!,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Please enter your Name';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
                     TextFormField(
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       decoration: InputDecoration(
                         label: const Text('Username'),
-                        prefixIcon: const Icon(Icons.account_circle_rounded),
+                        prefixIcon: const Icon(Icons.perm_identity_rounded),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
@@ -122,23 +128,36 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      onSaved: (value) => _email = value!,
+                      onSaved: (value) => _username = value!,
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
                             value.length < 6) {
-                          return 'Please enter a username with 6 characters or more';
+                          return 'Please enter a Username with 6 characters or more';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     TextFormField(
-                      obscureText: true,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: passwordVisible,
                       controller: _passwordController,
                       decoration: InputDecoration(
                         label: const Text('Password'),
-                        prefixIcon: const Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock_rounded),
+                        suffixIcon: IconButton(
+                          icon: Icon(passwordVisible
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded),
+                          onPressed: () {
+                            setState(
+                                  () {
+                                passwordVisible = !passwordVisible;
+                              },
+                            );
+                          },
+                        ),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
@@ -155,17 +174,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (value == null ||
                             value.isEmpty ||
                             _isStrong == false) {
-                          return 'Please enter a valid password.';
+                          return 'Please enter a valid Password';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     TextFormField(
-                      obscureText: true,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: repeatPasswordVisible,
                       decoration: InputDecoration(
                         label: const Text('Confirm Password'),
-                        prefixIcon: const Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock_rounded),
+                        suffixIcon: IconButton(
+                          icon: Icon(repeatPasswordVisible
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded),
+                          onPressed: () {
+                            setState(
+                                  () {
+                                repeatPasswordVisible = !repeatPasswordVisible;
+                              },
+                            );
+                          },
+                        ),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
@@ -177,12 +209,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (value == null ||
                             value.isEmpty ||
                             value != _passwordController.text) {
-                          return 'Passwords do not match.';
+                          return 'Passwords do not match';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     PasswordStrengthChecker(
                       configuration: PasswordStrengthCheckerConfiguration(
                         inactiveBorderColor: Theme.of(context)
@@ -191,7 +223,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       strength: passNotifier,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     Align(
                       alignment: AlignmentDirectional.topStart,
                       child: Text('Password must contain:'),
@@ -220,6 +252,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: registerUser,
                       child: const Text('Register'),
                     ),
+                    const SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushAndRemoveUntil(

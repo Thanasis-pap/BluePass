@@ -53,6 +53,68 @@ class UserDatabaseHelper {
     });
   }
 
+  // Edit user details by ID or Email
+  Future<int> editUser(int id, String? name, String? username, String? password) async {
+    final db = await database;
+
+    // Prepare a map with the new values for the fields
+    Map<String, dynamic> updatedFields = {};
+
+    if (name != null) updatedFields['name'] = name;
+    if (username != null) {
+      String encryptedEmail = await _aesHelper.encryptText(username);
+      updatedFields['email'] = encryptedEmail;
+    }
+    if (password != null) {
+      String encryptedPassword = await _aesHelper.encryptText(password);
+      updatedFields['password'] = encryptedPassword;
+    }
+
+    // Update the user in the database
+    return await db.update(
+      'users',                 // Table name
+      updatedFields,           // The fields to update
+      where: 'id = ?',         // Which user to update
+      whereArgs: [id],         // User's ID to update
+    );
+  }
+
+  // Delete user by email or ID
+  Future<int> deleteUser({int? id, String? username}) async {
+    final db = await database;
+
+    // Ensure at least one identifier (ID or email) is provided
+    if (id == null && username == null) {
+      throw ArgumentError('You must provide either an ID or an email to delete a user.');
+    }
+
+    // If email is provided, encrypt it
+    String? encryptedEmail;
+    if (username != null) {
+      encryptedEmail = await _aesHelper.encryptText(username);
+    }
+
+    // Build the where clause based on the provided identifier
+    String whereClause;
+    List<dynamic> whereArgs;
+
+    if (id != null) {
+      whereClause = 'id = ?';
+      whereArgs = [id];
+    } else {
+      whereClause = 'email = ?';
+      whereArgs = [encryptedEmail];
+    }
+
+    // Perform the deletion
+    return await db.delete(
+      'users',             // Table name
+      where: whereClause,   // Where clause to specify which user to delete
+      whereArgs: whereArgs, // Arguments for where clause
+    );
+  }
+
+
   // Login user by checking the encrypted email and password
   Future<Map<String, dynamic>?> loginUser(String email, String password) async {
     final db = await database;
@@ -95,7 +157,7 @@ class UserDatabaseHelper {
     return false;  // Login failed
   }
 
-  Future<Map<String, Object?>> loginName(String username) async {
+  Future<Map<String, dynamic>> loginName(String username) async {
     final db = await database;
 
     // Encrypt the email to match the one stored in the database

@@ -58,7 +58,7 @@ class _PasswordPage extends State<PasswordPage> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(size: 30, Icons.edit),
+                    icon: const Icon(size: 30, Icons.edit_rounded),
                     color: const Color(0xFF3F7BD7),
                     onPressed: () {
                       navigateToEditPassword(Global.password);
@@ -108,7 +108,7 @@ class _PasswordPage extends State<PasswordPage> {
                       title: Text(
                         'Username',
                         style: TextStyle(
-                          fontSize: Global.fontSize + 2,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -127,7 +127,7 @@ class _PasswordPage extends State<PasswordPage> {
                                   style: ToastificationStyle.flat,
                                   alignment: Alignment.bottomCenter,
                                   showProgressBar: false,
-                                  title: const Text('Username copied.'),
+                                  title: const Text('Copied successfully'),
                                   autoCloseDuration: const Duration(milliseconds: 1500),
                                 );
                               });
@@ -137,7 +137,7 @@ class _PasswordPage extends State<PasswordPage> {
                       ),
                       subtitle: Text(
                         Global.password['username'],
-                        style: TextStyle(fontSize: Global.fontSize),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
@@ -150,7 +150,7 @@ class _PasswordPage extends State<PasswordPage> {
                       title: Text(
                         'Password',
                         style: TextStyle(
-                          fontSize: Global.fontSize + 2,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -179,7 +179,7 @@ class _PasswordPage extends State<PasswordPage> {
                                   style: ToastificationStyle.flat,
                                   alignment: Alignment.bottomCenter,
                                   showProgressBar: false,
-                                  title: const Text('Password copied.'),
+                                  title: const Text('Copied successfully'),
                                   autoCloseDuration: const Duration(milliseconds: 1500),
                                 );
                               });
@@ -190,7 +190,7 @@ class _PasswordPage extends State<PasswordPage> {
                       subtitle: Text(
                         _obscureText ? '********' : Global.password['password'],
                         style: TextStyle(
-                          fontSize: Global.fontSize,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -204,7 +204,7 @@ class _PasswordPage extends State<PasswordPage> {
                       title: Text(
                         'Webpage',
                         style: TextStyle(
-                          fontSize: Global.fontSize + 2,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -221,7 +221,7 @@ class _PasswordPage extends State<PasswordPage> {
                       ),
                       subtitle: Text(
                         Global.password['webpage'],
-                        style: TextStyle(fontSize: Global.fontSize),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
@@ -242,7 +242,7 @@ class _PasswordPage extends State<PasswordPage> {
                         child: Text(
                           'Notes',
                           style: TextStyle(
-                            fontSize: Global.fontSize + 2,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -251,7 +251,7 @@ class _PasswordPage extends State<PasswordPage> {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         child: Text(
                           Global.password['notes'],
-                          style: TextStyle(fontSize: Global.fontSize),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                     ),

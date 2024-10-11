@@ -13,9 +13,12 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final BiometricHelper biometricHelper = BiometricHelper();
 
+
   void loginUser() async {
     if (_formKey.currentState!.validate() && await dbHelper.loginBiometric(_passwordController.text)) {
       _formKey.currentState!.save();
+      Map<String, dynamic> user = await dbHelper.loginName(_passwordController.text);
+      Global.name = user['name'];
       FocusManager.instance.primaryFocus?.unfocus();
       Navigator.push(
         context,
@@ -72,12 +75,13 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 50),
                     TextFormField(
+                      keyboardType: TextInputType.text,
                       controller: _passwordController,
                       decoration: InputDecoration(
                         label: const Text('Username'),
-                        prefixIcon: const Icon(Icons.account_circle_rounded),
+                        prefixIcon: const Icon(Icons.perm_identity_rounded),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(

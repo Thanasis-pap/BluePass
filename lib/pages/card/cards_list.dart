@@ -44,8 +44,7 @@ class _CardList extends State<CardsList> {
         builder: (context) => CardPage(card: card),
       ),
     );
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -68,7 +67,7 @@ class _CardList extends State<CardsList> {
           scrolledUnderElevation: 0,
           toolbarHeight: 100,
           title:
-              Text('Cards', style: TextStyle(fontSize: (Global.fontSize + 10))),
+              Text('Cards', style: TextStyle(fontSize: (28))),
           actions: selectedCards.isNotEmpty
               ? [
                   Padding(
@@ -82,7 +81,8 @@ class _CardList extends State<CardsList> {
                             builder: (BuildContext context) => AlertDialog(
                               title: const Text('Warning',
                                   style: TextStyle(fontSize: 28)),
-                              content: const Text('Are you sure you want to delete these cards?',
+                              content: const Text(
+                                  'Are you sure you want to delete these cards?',
                                   style: TextStyle(fontSize: 18)),
                               actions: <Widget>[
                                 TextButton(
@@ -90,7 +90,8 @@ class _CardList extends State<CardsList> {
                                     Navigator.pop(context, 'Cancel');
                                   },
                                   child: Text('Cancel',
-                                      style: TextStyle(fontSize: Global.fontSize)),
+                                      style:
+                                          TextStyle(fontSize: 18)),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -100,13 +101,16 @@ class _CardList extends State<CardsList> {
                                       style: ToastificationStyle.flat,
                                       alignment: Alignment.bottomCenter,
                                       showProgressBar: false,
-                                      title: const Text('Selected cards have been deleted'),
-                                      autoCloseDuration: const Duration(seconds: 2),
+                                      title: const Text(
+                                          'Selected cards have been deleted'),
+                                      autoCloseDuration:
+                                          const Duration(seconds: 2),
                                     );
                                     Navigator.pop(context, 'Yes');
                                   },
                                   child: Text('Yes',
-                                      style: TextStyle(fontSize: Global.fontSize)),
+                                      style:
+                                          TextStyle(fontSize: 18)),
                                 ),
                               ],
                             ),
@@ -116,81 +120,99 @@ class _CardList extends State<CardsList> {
                 ]
               : [], // Show delete button if any card is selected
         ),
-        body: ListView(
-          children: widget.cardData.map((card) {
-            //Global.card = card;
-            // Extract the color from the card data and convert it from string to Color
-            Color cardColor = Color(int.parse(card['color']));
-            bool isSelected = selectedCards.contains(card['id']);
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-              // Padding of 10 between buttons
-              child: SizedBox(
-                height: 85,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    backgroundColor: isSelected
-                        ? cardColor.withOpacity(0.8)
-                        : cardColor.withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(20.0), // Border radius of 35
-                    ),
-                  ),
-                  onPressed: () {
-                    if (selectedCards.isEmpty) {
-                      Recent.openCard(card['id']);
-                      navigateToCard(card);
-                    } else {
-                      // Toggle selection if a card is already selected
-                      toggleCardSelection(card['id']);
-                    }
-                  },
-                  onLongPress: () {
-                    // Long press to select card
-                    toggleCardSelection(card['id']);
-                  },
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
-                    title: Text(
-                      overflow: TextOverflow.ellipsis,
-                      card['name'],
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        //color: Colors.white, // Text color
+        body: widget.cardData.isNotEmpty
+            ? ListView(
+                children: widget.cardData.map((card) {
+                  //Global.card = card;
+                  // Extract the color from the card data and convert it from string to Color
+                  Color cardColor = Color(int.parse(card['color']));
+                  bool isSelected = selectedCards.contains(card['id']);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 20.0),
+                    // Padding of 10 between buttons
+                    child: SizedBox(
+                      height: 85,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: isSelected
+                              ? cardColor.withOpacity(0.8)
+                              : cardColor.withOpacity(0.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                20.0), // Border radius of 35
+                          ),
+                        ),
+                        onPressed: () {
+                          if (selectedCards.isEmpty) {
+                            Recent.openCard(card['id']);
+                            navigateToCard(card);
+                          } else {
+                            // Toggle selection if a card is already selected
+                            toggleCardSelection(card['id']);
+                          }
+                        },
+                        onLongPress: () {
+                          // Long press to select card
+                          toggleCardSelection(card['id']);
+                        },
+                        child: ListTile(
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(10, 0, 20, 0),
+                          title: Text(
+                            overflow: TextOverflow.ellipsis,
+                            card['name'],
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              //color: Colors.white, // Text color
+                            ),
+                          ),
+                          subtitle: Text(
+                            overflow: TextOverflow.ellipsis,
+                            card['card_holder'].replaceAll('_', ' '),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              //color: Colors.white, // Text color
+                            ),
+                          ),
+                          trailing: Text(
+                            "**** " +
+                                card['card_number']
+                                    .substring(card['card_number'].length - 4),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              //color: Colors.white, // Text color
+                            ),
+                          ),
+                          leading: const Icon(
+                            Icons.credit_card_rounded, // Use the password icon
+                            size: 40, // Scale the icon larger than the button
+                            //color: Colors.blue, // Set the color of the icon
+                          ),
+                        ),
                       ),
                     ),
-                    subtitle: Text(
-                      overflow: TextOverflow.ellipsis,
-                      card['card_holder'].replaceAll('_', ' '),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        //color: Colors.white, // Text color
-                      ),
+                  );
+                }).toList(),
+              )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.credit_card_off_rounded,size: 50,color: Colors.grey,),
+                    SizedBox(height: 10,),
+                    Text(
+                      'Nothing here yet.',
+                      style: TextStyle(fontSize: 18,color: Colors.grey),
+                      maxLines: 2,
                     ),
-                    trailing: Text(
-                      "**** " +
-                          card['card_number']
-                              .substring(card['card_number'].length - 4),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        //color: Colors.white, // Text color
-                      ),
-                    ),
-                    leading: const Icon(
-                      Icons.credit_card_rounded, // Use the password icon
-                      size: 40, // Scale the icon larger than the button
-                      //color: Colors.blue, // Set the color of the icon
-                    ),
-                  ),
+                    SizedBox(height: 100,)
+                  ],
                 ),
               ),
-            );
-          }).toList(),
-        ),
       ),
     );
   }

@@ -45,7 +45,7 @@ class _CardPage extends State<CardPage> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(size: 30, Icons.edit),
+                    icon: const Icon(size: 30, Icons.edit_rounded),
                     color: const Color(0xFF3F7BD7),
                     onPressed: () {
                       navigateToEditCard(Global.card);
@@ -104,7 +104,7 @@ class _CardPage extends State<CardPage> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(5.0),
-                              width: Global.fontSize * 15,
+                              width: 270,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 //color: Theme.of(context).focusColor,
@@ -112,7 +112,7 @@ class _CardPage extends State<CardPage> {
                               ),
                               child: Text(
                                 Global.card['card_number'],
-                                style: TextStyle(fontSize: Global.fontSize),
+                                style: TextStyle(fontSize: 18),
                               ),
                             ),
                             IconButton(
@@ -127,7 +127,7 @@ class _CardPage extends State<CardPage> {
                                     style: ToastificationStyle.flat,
                                     alignment: Alignment.bottomCenter,
                                     showProgressBar: false,
-                                    title: const Text('Copied successfully.'),
+                                    title: const Text('Copied successfully'),
                                     autoCloseDuration: const Duration(milliseconds: 1500),
                                   );
                                 });
@@ -143,7 +143,7 @@ class _CardPage extends State<CardPage> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(5.0),
-                              width: Global.fontSize * 15,
+                              width: 270,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 //color: Theme.of(context).focusColor,
@@ -151,7 +151,7 @@ class _CardPage extends State<CardPage> {
                               ),
                               child: Text(
                                 Global.card['card_holder'].replaceAll('_', ' '),
-                                style: TextStyle(fontSize: Global.fontSize),
+                                style: TextStyle(fontSize: 18),
                               ),
                             ),
                             IconButton(
@@ -167,7 +167,7 @@ class _CardPage extends State<CardPage> {
                                     style: ToastificationStyle.flat,
                                     alignment: Alignment.bottomCenter,
                                     showProgressBar: false,
-                                    title: const Text('Copied successfully.'),
+                                    title: const Text('Copied successfully'),
                                     autoCloseDuration: const Duration(milliseconds: 1500),
                                   );
                                 });
@@ -186,7 +186,7 @@ class _CardPage extends State<CardPage> {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(5.0),
-                                  width: Global.fontSize * 5,
+                                  width: 18 * 5,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     //color: Theme.of(context).focusColor,
@@ -194,7 +194,7 @@ class _CardPage extends State<CardPage> {
                                   ),
                                   child: Text(
                                     Global.card['expiration_date'],
-                                    style: TextStyle(fontSize: Global.fontSize),
+                                    style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                                 IconButton(
@@ -210,7 +210,7 @@ class _CardPage extends State<CardPage> {
                                         style: ToastificationStyle.flat,
                                         alignment: Alignment.bottomCenter,
                                         showProgressBar: false,
-                                        title: const Text('Copied successfully.'),
+                                        title: const Text('Copied successfully'),
                                         autoCloseDuration: const Duration(milliseconds: 1500),
                                       );
                                     });
@@ -223,7 +223,7 @@ class _CardPage extends State<CardPage> {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(5.0),
-                                  width: Global.fontSize * 5,
+                                  width: 18 * 5,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     //color: Theme.of(context).focusColor,
@@ -231,7 +231,7 @@ class _CardPage extends State<CardPage> {
                                   ),
                                   child: Text(
                                     Global.card['cvv'],
-                                    style: TextStyle(fontSize: Global.fontSize),
+                                    style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                                 IconButton(
@@ -246,7 +246,7 @@ class _CardPage extends State<CardPage> {
                                         style: ToastificationStyle.flat,
                                         alignment: Alignment.bottomCenter,
                                         showProgressBar: false,
-                                        title: const Text('Copied successfully.'),
+                                        title: const Text('Copied successfully'),
                                         autoCloseDuration: const Duration(milliseconds: 1500),
                                       );
                                     });
@@ -279,14 +279,14 @@ class _CardPage extends State<CardPage> {
                     child: Text(
                       'Notes',
                       style: TextStyle(
-                        fontSize: Global.fontSize + 2,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   subtitle: Text(
                     Global.card['notes'],
-                    style: TextStyle(fontSize: Global.fontSize),
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),

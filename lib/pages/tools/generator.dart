@@ -30,16 +30,23 @@ class _Generator extends State<Generator> {
           child: Form(
             key: _formKey,
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 170,
-                  child: Card.filled(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: ListView(
-                        padding: const EdgeInsets.all(20),
+                const Text(
+                  'Details',
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
+                  child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,6 +102,11 @@ class _Generator extends State<Generator> {
                       )),
                 ),
                 const SizedBox(height: 20),
+                const Text(
+                  'Generate:',
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(height: 10),
                 PasswordStrengthFormChecker(
                   minimumStrengthRequired: PasswordStrength.secure,
                   onChanged: (password, notifier) {
@@ -162,8 +174,12 @@ class _Generator extends State<Generator> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
+                  passwordStrengthCheckerConfiguration:
+                  PasswordStrengthCheckerConfiguration(
+                    inactiveBorderColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
                   onPasswordGenerated: (password, notifier) {
-                    debugPrint('$password - length: ${password.length}');
                     // Don't forget to update the notifier!
                     notifier.value = PasswordStrength.calculate(text: password);
                   },

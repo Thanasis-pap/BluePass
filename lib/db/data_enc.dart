@@ -2,11 +2,13 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:passwordmanager/global_dirs.dart';
+// Assuming AESHelper is defined
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
   final AESHelper _aesHelper = AESHelper();
+  String? _userId; // This will store the unique user ID or email
 
   factory DatabaseHelper() {
     return _instance;
@@ -14,7 +16,18 @@ class DatabaseHelper {
 
   DatabaseHelper._internal();
 
+  // Set the current user
+  void setUser(String userId) {
+    _userId = userId;
+    _database = null; // Reset the database when a new user is set
+  }
+
+  // Ensure the user is set before accessing the database
   Future<Database> get database async {
+    if (_userId == null) {
+      throw Exception('User not set. Call setUser(userId) before accessing the database.');
+    }
+
     if (_database != null) {
       return _database!;
     }
@@ -22,10 +35,25 @@ class DatabaseHelper {
     return _database!;
   }
 
+  // Create a unique database for each user
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, 'secure_data.db');
+    String path = join(documentsDirectory.path, 'secure_data_$_userId.db'); // Unique per user
     return await openDatabase(path, version: 1, onCreate: _onCreate);
+  }
+
+  Future<void> deleteDatabaseFile(String userId) async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String dbPath = join(documentsDirectory.path, 'secure_data_$userId.db'); // Unique per user
+
+    // Delete the database file
+    File dbFile = File(dbPath);
+    if (await dbFile.exists()) {
+      await dbFile.delete();
+      print("Database file deleted successfully.");
+    } else {
+      print("Database file does not exist.");
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -270,4 +298,52 @@ class DatabaseHelper {
     }));
   }
 
+  Future<void> exportDatabase() async {
+    if (_userId == null) {
+      throw Exception("User ID is not set.");
+    }
+
+    // Get application documents directory
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+
+    // Define the path for the combined database
+    String combinedDbPath = join(appDocDir.path, 'secure_data_$_userId.db'); // Unique per user
+
+    // Check if the combined database exists
+    if (!await File(combinedDbPath).exists()) {
+      throw Exception("Database file does not exist.");
+    }
+
+    // Request permission to write to external storage (for Android)
+    if (Platform.isAndroid) {
+      await _requestStoragePermission();
+    }
+
+    // Get the Downloads folder path
+    Directory? downloadsDir = await getExternalStorageDirectory();
+    if (downloadsDir == null) {
+      throw Exception("Failed to access external storage directory.");
+    }
+
+    // Define path in Downloads folder
+    String externalDbPath = join(downloadsDir.path, 'backup_database_$_userId.db');
+
+    try {
+      // Copy the combined database to Downloads
+      File combinedDbFile = File(combinedDbPath);
+      await combinedDbFile.copy(externalDbPath);
+
+      print("Database exported successfully to the Downloads folder.");
+    } catch (e) {
+      throw Exception("Failed to export database: $e");
+    }
+  }
+
+  // Function to request storage permission for Android
+  Future<void> _requestStoragePermission() async {
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      throw Exception("Storage permission denied");
+    }
+  }
 }

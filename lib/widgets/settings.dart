@@ -14,15 +14,13 @@ class Settings {
       ),
       const SizedBox(height: 20),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         child: SizedBox(
-          height: 65,
+          height: 70,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => GeneralSettings()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => AccountSettings()));
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.zero,
@@ -31,10 +29,9 @@ class Settings {
               ),
             ),
             child: const ListTile(
-              contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
               title: Text(
                 overflow: TextOverflow.ellipsis,
-                'General Settings',
+                'App Settings',
                 style: TextStyle(
                   fontSize: 18,
                   //fontWeight: FontWeight.bold,
@@ -43,24 +40,23 @@ class Settings {
               ),
               leading: Icon(
                 Icons.settings_rounded,
-                // Use the password icon
-                size: 30, // Scale the icon larger than the button
-                //color: Colors.blue, // Set the color of the icon
+                color: Color(0xFF1A32CC),
+              ),
+              trailing: Icon(
+                Icons.navigate_next,
               ),
             ),
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         child: SizedBox(
-          height: 65,
+          height: 70,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => AccountSettings()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => GeneralSettings()));
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.zero,
@@ -69,36 +65,34 @@ class Settings {
               ),
             ),
             child: const ListTile(
-              contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
               title: Text(
                 overflow: TextOverflow.ellipsis,
-                'Account Settings',
+                'Security & Privacy',
                 style: TextStyle(
                   fontSize: 18,
                   //fontWeight: FontWeight.bold,
                   //color: Colors.white, // Text color
                 ),
               ),
+              trailing: Icon(
+                Icons.navigate_next,
+              ),
               leading: Icon(
-                Icons.manage_accounts_rounded,
-                // Use the password icon
-                size: 30, // Scale the icon larger than the button
-                //color: Colors.blue, // Set the color of the icon
+                Icons.security_rounded,
+                color: Color(0xFF1A32CC), // Set the color of the icon
               ),
             ),
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         child: SizedBox(
-          height: 65,
+          height: 70,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => Temporary()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => Temporary()));
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.zero,
@@ -107,21 +101,85 @@ class Settings {
               ),
             ),
             child: const ListTile(
-              contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
               title: Text(
                 overflow: TextOverflow.ellipsis,
-                'Security & Privacy Settings',
+                'About',
                 style: TextStyle(
                   fontSize: 18,
                   //fontWeight: FontWeight.bold,
                   //color: Colors.white, // Text color
                 ),
               ),
+              trailing: Icon(
+                Icons.navigate_next,
+              ),
               leading: Icon(
-                Icons.privacy_tip_rounded,
-                // Use the password icon
-                size: 30, // Scale the icon larger than the button
-                //color: Colors.blue, // Set the color of the icon
+                Icons.info_rounded,
+                color: Color(0xFF1A32CC), // Set the color of the icon
+              ),
+            ),
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child: SizedBox(
+          height: 70,
+          child: ElevatedButton(
+            onPressed: () {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title:
+                  const Text('Warning', style: TextStyle(fontSize: 25)),
+                  content: const Text('Are you sure you want to log out?',
+                      style: TextStyle(fontSize: 16)),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                      },
+                      child: Text('Cancel',
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        toastification.show(
+                          context: context,
+                          style: ToastificationStyle.flat,
+                          alignment: Alignment.bottomCenter,
+                          showProgressBar: false,
+                          title: const Text('Logged out successfully.'),
+                          autoCloseDuration: const Duration(seconds: 2),
+                        );
+                        Navigator.pop(context, 'Yes');
+                        Navigator.of(context).pushAndRemoveUntil(
+                            LeftPageRoute(page: const LoginPage()),
+                                (Route<dynamic> route) => false);
+                      },
+                      child: Text('Yes',
+                          style: TextStyle(fontSize: 18)),
+                    ),
+                  ],
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(20.0), // Border radius of 35
+              ),
+            ),
+            child: const ListTile(
+              leading: Icon(Icons.logout_rounded,color: Colors.red,),
+              title: Text(
+                overflow: TextOverflow.ellipsis,
+                'Logout',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.red,
+                ),
               ),
             ),
           ),

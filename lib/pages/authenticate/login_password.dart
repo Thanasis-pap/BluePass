@@ -9,19 +9,29 @@ class LoginPassword extends StatefulWidget {
 
 class _LoginPassword extends State<LoginPassword> {
   final formKey = GlobalKey<FormState>();
-
+  bool passwordVisible = true;
   String password = '';
   final dbHelper = UserDatabaseHelper();
-
   final BiometricHelper biometricHelper = BiometricHelper();
+
+  void getParams() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> user = await dbHelper.loginName(Global.username);
+    setState(() {
+      Global.auth = prefs.getBool(user['id'].toString()) ?? false;
+    });
+    if (Global.auth) {
+      checkBiometricAndAuthenticate();
+    }
+  }
 
   void loginUser() async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
       final user = await dbHelper.loginUser(Global.username, password);
-
       if (user != null) {
+        DatabaseHelper().setUser(user['id'].toString());
         toastification.show(
           context: context,
           type: ToastificationType.success,
@@ -33,9 +43,7 @@ class _LoginPassword extends State<LoginPassword> {
         );
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (context) => MyHomePage(
-                title: user['name'],
-              ),
+              builder: (context) => MyHomePage(),
             ),
             (Route<dynamic> route) => false);
       } else {
@@ -59,7 +67,8 @@ class _LoginPassword extends State<LoginPassword> {
     if (isAvailable) {
       bool isAuthenticated = await biometricHelper.authenticateUser();
       if (isAuthenticated && userExists) {
-        Map <String,dynamic> user = await dbHelper.loginName(Global.username);
+        Map<String, dynamic> user = await dbHelper.loginName(Global.username);
+        DatabaseHelper().setUser(user['id'].toString());
         // Proceed with login or access to secured parts of the app
         toastification.show(
           context: context,
@@ -72,7 +81,7 @@ class _LoginPassword extends State<LoginPassword> {
         );
         Navigator.of(context).pushAndRemoveUntil(
             LeftPageRoute(
-              page: MyHomePage(title: user['name']),
+              page: MyHomePage(),
             ),
             (Route<dynamic> route) => false);
       } else {
@@ -104,6 +113,7 @@ class _LoginPassword extends State<LoginPassword> {
   @override
   void initState() {
     super.initState();
+    getParams();
   }
 
   @override
@@ -129,28 +139,44 @@ class _LoginPassword extends State<LoginPassword> {
                         CircleAvatar(
                           backgroundColor: const Color(0xFF1A32CC),
                           radius: 30,
-                          child: Text(Global.username[0].capitalize!,style: const TextStyle(fontSize: 25,color: Colors.white)),
+                          child: Text(Global.name[0].capitalize!,
+                              style: const TextStyle(
+                                  fontSize: 25, color: Colors.white)),
                         ),
                         const SizedBox(
-                          height: 10,
+                          height: 15,
                         ),
                         Text(
-                          Global.username,
+                          Global.name,
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
                               ?.copyWith(
-
+                                fontWeight: FontWeight.bold,
                               ),
                         ),
+                        Text(Global.username),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 40),
                     TextFormField(
-                      obscureText: true,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: passwordVisible,
                       decoration: InputDecoration(
                         label: const Text('Password'),
-                        prefixIcon: const Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock_rounded),
+                        suffixIcon: IconButton(
+                          icon: Icon(passwordVisible
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded),
+                          onPressed: () {
+                            setState(
+                              () {
+                                passwordVisible = !passwordVisible;
+                              },
+                            );
+                          },
+                        ),
                         filled: true,
                         //fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
@@ -161,7 +187,7 @@ class _LoginPassword extends State<LoginPassword> {
                       onSaved: (value) => password = value!,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Please enter your Password';
                         }
                         return null;
                       },
@@ -178,14 +204,9 @@ class _LoginPassword extends State<LoginPassword> {
                             child: const Text('Biometric Login'),
                           )
                         : Text(''),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            LeftPageRoute(page: const RegisterPage()),
-                            (Route<dynamic> route) => false);
-                      },
-                      child: const Text('No account? Register'),
-                    ),
+                    SizedBox(
+                      height: 50,
+                    )
                   ],
                 ),
               ),

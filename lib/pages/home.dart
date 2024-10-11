@@ -1,14 +1,10 @@
 import 'package:passwordmanager/global_dirs.dart';
 
-import '../widgets/search.dart';
 
 class MyHomePage extends StatefulWidget {
-  static final ValueNotifier<ThemeMode> themeNotifier =
-      ValueNotifier(ThemeMode.light);
 
-  final String title;
 
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key,});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -158,8 +154,12 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               width: 15,
             ),
-            Text("Hello, ${widget.title}",
-                style: const TextStyle(fontSize: (28))),
+            SizedBox(
+              width: 280,
+              child: Text("Hello, ${Global.name.split(" ")[0]}",
+                  style: const TextStyle(
+                      fontSize: (28), overflow: TextOverflow.fade)),
+            )
           ],
         ),
         centerTitle: false,
@@ -409,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? const SizedBox(
                         height: 140,
                         // Define the height for the horizontal list
-                        child: const Center(
+                        child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -489,8 +489,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                       item?['name'],
                                       style: const TextStyle(
                                         fontSize: 18,
-                                        //fontWeight: FontWeight.bold,
-                                        //color: Colors.white, // Text color
                                       ),
                                     ),
                                     leading: Icon(
@@ -546,7 +544,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     prefixIcon: const Icon(Icons.search_rounded),
                     filled: true,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(20),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -573,91 +571,96 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     )
-                  : Expanded(
-                      child: filteredItems.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: filteredItems.length,
-                              itemBuilder: (context, index) {
-                                Map<String, dynamic> item =
-                                    filteredItems[index];
-                                bool isCard = item.containsKey(
-                                    'card_number'); // Assuming card has 'card_number'
+                  : Animate(
+                      effects: [
+                        FadeEffect(),
+                      ],
+                      child: Expanded(
+                        child: filteredItems.isNotEmpty
+                            ? ListView.builder(
+                                itemCount: filteredItems.length,
+                                itemBuilder: (context, index) {
+                                  Map<String, dynamic> item =
+                                      filteredItems[index];
+                                  bool isCard = item.containsKey(
+                                      'card_number'); // Assuming card has 'card_number'
 
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 20.0),
-                                  child: SizedBox(
-                                    height: 65,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        // If it's a card, handle card click
-                                        if (isCard) {
-                                          Recent.openCard(item['id']);
-                                          Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          CardPage(card: item)))
-                                              .then((context) {
-                                            setState(() {
-                                              fetchFavoriteItems();
-                                              fetchRecentItems();
-                                              fetchAllItems();
-                                            });
-                                          });
-                                          // Navigate to card details or handle another action
-                                        } else {
-                                          Recent.openPassword(item['id']);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) => PasswordPage(
-                                                      password: item))).then(
-                                              (context) {
-                                            setState(() {
-                                              fetchFavoriteItems();
-                                              fetchRecentItems();
-                                              fetchAllItems();
-                                            });
-                                          });
-                                          // Navigate to password details or handle another action
-                                        }
-                                      },
-                                      child: ListTile(
-                                        contentPadding:
-                                            const EdgeInsets.fromLTRB(
-                                                0, 0, 20, 0),
-                                        title: Text(
-                                          item['name'], // Display name
-                                          style: const TextStyle(
-                                            fontSize: 18,
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 30.0),
+                                    child: SizedBox(
+                                      height: 65,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
                                           ),
                                         ),
-                                        leading: isCard
-                                            ? const Icon(
-                                                Icons.credit_card_rounded,
-                                                size: 40,
-                                              )
-                                            : const Icon(
-                                                Icons.lock_rounded,
-                                                size: 40,
-                                              ),
+                                        onPressed: () {
+                                          // If it's a card, handle card click
+                                          if (isCard) {
+                                            Recent.openCard(item['id']);
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) => CardPage(
+                                                        card: item))).then(
+                                                (context) {
+                                              setState(() {
+                                                fetchFavoriteItems();
+                                                fetchRecentItems();
+                                                fetchAllItems();
+                                              });
+                                            });
+                                            // Navigate to card details or handle another action
+                                          } else {
+                                            Recent.openPassword(item['id']);
+                                            Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            PasswordPage(
+                                                                password:
+                                                                    item)))
+                                                .then((context) {
+                                              setState(() {
+                                                fetchFavoriteItems();
+                                                fetchRecentItems();
+                                                fetchAllItems();
+                                              });
+                                            });
+                                            // Navigate to password details or handle another action
+                                          }
+                                        },
+                                        child: ListTile(
+                                          title: Text(
+                                            item['name'], // Display name
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          leading: isCard
+                                              ? const Icon(
+                                                  Icons.credit_card_rounded,
+                                                  size: 40,
+                                                )
+                                              : const Icon(
+                                                  Icons.lock_outline_rounded,
+                                                  size: 40,
+                                                ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            )
-                          : const Center(
-                              child: Text('No results found'),
-                            ),
+                                  );
+                                },
+                              )
+                            : const Center(
+                                child: Text('No results found'),
+                              ),
+                      ),
                     ),
             ]),
         ListView(
@@ -731,9 +734,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
               child: SizedBox(
-                height: 150,
+                height: 160,
                 child: ElevatedButton(
                   onPressed: () async {
                     List<Map<String, dynamic>> cards =

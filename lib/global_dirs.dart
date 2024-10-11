@@ -18,7 +18,12 @@ export 'package:fluttertoast/fluttertoast.dart';
 export 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 export 'package:password_strength_checker/password_strength_checker.dart';
 export 'package:flutter_displaymode/flutter_displaymode.dart';
+export 'package:flutter_animate/flutter_animate.dart';
+export 'package:provider/provider.dart';
+export 'package:path_provider/path_provider.dart';
+export 'package:permission_handler/permission_handler.dart';
 
+export 'package:introduction_screen/introduction_screen.dart';
 export 'package:passwordmanager/helpers/password_check.dart';
 export 'package:passwordmanager/helpers/biometric_helper.dart';
 export 'package:passwordmanager/widgets/title.dart';
@@ -36,8 +41,8 @@ export 'package:passwordmanager/helpers/aes_helper.dart';
 export 'package:passwordmanager/pages/card/cards_list.dart';
 export 'package:passwordmanager/pages/password/passwords_list.dart';
 export 'package:passwordmanager/helpers/recent_helper.dart';
-export 'package:passwordmanager/pages/settings/general.dart';
-export 'package:passwordmanager/pages/settings/account.dart';
+export 'package:passwordmanager/pages/settings/security.dart';
+export 'package:passwordmanager/pages/settings/app.dart';
 export 'package:passwordmanager/widgets/settings.dart';
 export 'package:passwordmanager/widgets/tools.dart';
 export 'package:passwordmanager/pages/authenticate/login_password.dart';
@@ -45,14 +50,20 @@ export 'package:passwordmanager/pages/temporary.dart';
 export 'package:passwordmanager/helpers/fade_helper.dart';
 export 'package:passwordmanager/pages/tools/generator.dart';
 export 'package:passwordmanager/pages/tools/checker.dart';
+export 'package:passwordmanager/pages/intro.dart';
+export 'package:passwordmanager/pages/settings/change_username.dart';
+export 'package:passwordmanager/pages/settings/change_password.dart';
+export 'package:passwordmanager/pages/settings/edit_name.dart';
+
+
 
 class Global {
   static List<Map<String, dynamic>?> recentItems = [];
   static List<Map<String, dynamic>?> favorItems = [];
   static String username = '';
-  static double fontSize = 18;
   static bool auth = false;
   static String initialRoute = "/login";
+  static String themeMode = 'System';
   static Queue<int> recent = Queue<int>();
   static List<int> recentCards = [];
   static List<int> recentPasswords = [];
