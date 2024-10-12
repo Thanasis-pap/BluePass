@@ -22,8 +22,8 @@ export 'package:flutter_animate/flutter_animate.dart';
 export 'package:provider/provider.dart';
 export 'package:path_provider/path_provider.dart';
 export 'package:permission_handler/permission_handler.dart';
-
 export 'package:introduction_screen/introduction_screen.dart';
+
 export 'package:passwordmanager/helpers/password_check.dart';
 export 'package:passwordmanager/helpers/biometric_helper.dart';
 export 'package:passwordmanager/widgets/title.dart';
@@ -54,6 +54,8 @@ export 'package:passwordmanager/pages/intro.dart';
 export 'package:passwordmanager/pages/settings/change_username.dart';
 export 'package:passwordmanager/pages/settings/change_password.dart';
 export 'package:passwordmanager/pages/settings/edit_name.dart';
+export 'package:passwordmanager/pages/tools/export.dart';
+export 'package:passwordmanager/pages/tools/import.dart';
 
 
 
@@ -62,6 +64,7 @@ class Global {
   static List<Map<String, dynamic>?> favorItems = [];
   static String username = '';
   static bool auth = false;
+  static bool storage = false;
   static String initialRoute = "/login";
   static String themeMode = 'System';
   static Queue<int> recent = Queue<int>();

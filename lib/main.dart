@@ -1,27 +1,21 @@
 import 'package:passwordmanager/global_dirs.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final secureKeyStorage = SecureKeyStorage();
-  final aesHelper = AESHelper();
   await FlutterDisplayMode.setHighRefreshRate();
   // Check if the AES key is already stored
   String? existingKey = await secureKeyStorage.retrieveKey();
   if (existingKey == null) {
     // Generate a new AES key and store it securely
-    String newAESKey = generateAESKey();
+    String newAESKey = secureKeyStorage.generateAESKey();
     await secureKeyStorage.storeKey(newAESKey);
   }
 
   runApp(const MyApp());
 }
 
-String generateAESKey() {
-  final key = encrypt.Key.fromLength(32); // 256-bit key
-  return key.base64;
-}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});

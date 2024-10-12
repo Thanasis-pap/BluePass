@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class SecureKeyStorage {
   final _storage = const FlutterSecureStorage();
@@ -14,5 +15,10 @@ class SecureKeyStorage {
 
   Future<void> deleteKey() async {
     await _storage.delete(key: _key);
+  }
+
+  String generateAESKey() {
+    final key = encrypt.Key.fromSecureRandom(32); // 256-bit key
+    return key.base64;
   }
 }

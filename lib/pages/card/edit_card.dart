@@ -136,7 +136,7 @@ class _EditCard extends State<EditCard> {
       cardData = widget.data!;
       nameController.text = widget.data?['name'];
       cardController.text = widget.data?['card_number'];
-      holderController.text = widget.data?['card_holder'];
+      holderController.text = widget.data?['card_holder'].replaceAll('_', ' ');
       dateController.text = widget.data?['expiration_date'];
       cvvController.text = widget.data?['cvv'];
       notesController.text = widget.data?['notes'];
@@ -461,7 +461,7 @@ class _EditCard extends State<EditCard> {
                               cardData = {
                                 'name': Global.card['name'],
                                 'card_holder': Global.card['card_holder']
-                                    .replaceAll('_', ' '),
+                                    .replaceAll(' ', '_'),
                                 'card_number': Global.card['card_number'],
                                 'expiration_date':
                                     Global.card['expiration_date'],

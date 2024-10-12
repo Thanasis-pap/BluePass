@@ -26,6 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
       try {
         // Insert the user data into the database
         await dbHelper.registerUser(_name, _username, _password);
+        print('ok');
         Map<String, dynamic> user = await dbHelper.loginName(_username);
         DatabaseHelper().setUser(user['id'].toString());
         Global.username = _username;
@@ -135,6 +136,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             value.length < 6) {
                           return 'Please enter a Username with 6 characters or more';
                         }
+                        else if (value.contains(' ')) {
+                          return 'Spaces are not acceptable';
+                        }
                         return null;
                       },
                     ),
@@ -175,6 +179,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             value.isEmpty ||
                             _isStrong == false) {
                           return 'Please enter a valid Password';
+                        }
+                        else if (value.contains(' ')) {
+                          return 'Spaces are not acceptable';
                         }
                         return null;
                       },

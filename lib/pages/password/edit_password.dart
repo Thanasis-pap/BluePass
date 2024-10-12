@@ -147,7 +147,7 @@ class _EditPassword extends State<EditPassword> {
                     style: ToastificationStyle.flat,
                     alignment: Alignment.bottomCenter,
                     showProgressBar: false,
-                    title: const Text('Card will be added to favorites'),
+                    title: const Text('Password will be added to favorites'),
                     autoCloseDuration: const Duration(seconds: 2),
                   );
                 }

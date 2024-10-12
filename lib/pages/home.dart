@@ -1,10 +1,9 @@
 import 'package:passwordmanager/global_dirs.dart';
 
-
 class MyHomePage extends StatefulWidget {
-
-
-  const MyHomePage({super.key,});
+  const MyHomePage({
+    super.key,
+  });
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -513,156 +512,158 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        Column(
-            //direction: Axis.vertical,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-                child: Text(
-                  'Search',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+        SingleChildScrollView(
+          child: Column(
+              //direction: Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                  child: Text(
+                    'Search',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: TextField(
-                  controller: searchController,
-                  onChanged: (value) {
-                    filterItems(value); // Filter items based on search input
-                  },
-                  decoration: InputDecoration(
-                    label: const Text(
-                      'Search passwords or cards',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    prefixIcon: const Icon(Icons.search_rounded),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (value) {
+                      filterItems(value); // Filter items based on search input
+                    },
+                    decoration: InputDecoration(
+                      label: const Text(
+                        'Search passwords or cards',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              filteredItems.isEmpty
-                  ? Align(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 50.0),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.search_off_rounded,
-                              size: 40,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Nothing here yet.', // Initial message
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ],
+                filteredItems.isEmpty
+                    ? Align(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 50.0),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.search_off_rounded,
+                                size: 40,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                'Nothing here yet.', // Initial message
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    )
-                  : Animate(
-                      effects: [
-                        FadeEffect(),
-                      ],
-                      child: Expanded(
-                        child: filteredItems.isNotEmpty
-                            ? ListView.builder(
-                                itemCount: filteredItems.length,
-                                itemBuilder: (context, index) {
-                                  Map<String, dynamic> item =
-                                      filteredItems[index];
-                                  bool isCard = item.containsKey(
-                                      'card_number'); // Assuming card has 'card_number'
+                      )
+                    : Animate(
+                        effects: [
+                          FadeEffect(),
+                        ],
+                        child: Expanded(
+                          child: filteredItems.isNotEmpty
+                              ? ListView.builder(
+                                  itemCount: filteredItems.length,
+                                  itemBuilder: (context, index) {
+                                    Map<String, dynamic> item =
+                                        filteredItems[index];
+                                    bool isCard = item.containsKey(
+                                        'card_number'); // Assuming card has 'card_number'
 
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 30.0),
-                                    child: SizedBox(
-                                      height: 65,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          elevation: 0,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          // If it's a card, handle card click
-                                          if (isCard) {
-                                            Recent.openCard(item['id']);
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) => CardPage(
-                                                        card: item))).then(
-                                                (context) {
-                                              setState(() {
-                                                fetchFavoriteItems();
-                                                fetchRecentItems();
-                                                fetchAllItems();
-                                              });
-                                            });
-                                            // Navigate to card details or handle another action
-                                          } else {
-                                            Recent.openPassword(item['id']);
-                                            Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            PasswordPage(
-                                                                password:
-                                                                    item)))
-                                                .then((context) {
-                                              setState(() {
-                                                fetchFavoriteItems();
-                                                fetchRecentItems();
-                                                fetchAllItems();
-                                              });
-                                            });
-                                            // Navigate to password details or handle another action
-                                          }
-                                        },
-                                        child: ListTile(
-                                          title: Text(
-                                            item['name'], // Display name
-                                            style: const TextStyle(
-                                              fontSize: 18,
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 30.0),
+                                      child: SizedBox(
+                                        height: 65,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
                                             ),
                                           ),
-                                          leading: isCard
-                                              ? const Icon(
-                                                  Icons.credit_card_rounded,
-                                                  size: 40,
-                                                )
-                                              : const Icon(
-                                                  Icons.lock_outline_rounded,
-                                                  size: 40,
-                                                ),
+                                          onPressed: () {
+                                            // If it's a card, handle card click
+                                            if (isCard) {
+                                              Recent.openCard(item['id']);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) => CardPage(
+                                                          card: item))).then(
+                                                  (context) {
+                                                setState(() {
+                                                  fetchFavoriteItems();
+                                                  fetchRecentItems();
+                                                  fetchAllItems();
+                                                });
+                                              });
+                                              // Navigate to card details or handle another action
+                                            } else {
+                                              Recent.openPassword(item['id']);
+                                              Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              PasswordPage(
+                                                                  password:
+                                                                      item)))
+                                                  .then((context) {
+                                                setState(() {
+                                                  fetchFavoriteItems();
+                                                  fetchRecentItems();
+                                                  fetchAllItems();
+                                                });
+                                              });
+                                              // Navigate to password details or handle another action
+                                            }
+                                          },
+                                          child: ListTile(
+                                            title: Text(
+                                              item['name'], // Display name
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                            leading: isCard
+                                                ? const Icon(
+                                                    Icons.credit_card_rounded,
+                                                    size: 40,
+                                                  )
+                                                : const Icon(
+                                                    Icons.lock_outline_rounded,
+                                                    size: 40,
+                                                  ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : const Center(
-                                child: Text('No results found'),
-                              ),
+                                    );
+                                  },
+                                )
+                              : const Center(
+                                  child: Text('No results found'),
+                                ),
+                        ),
                       ),
-                    ),
-            ]),
+              ]),
+        ),
         ListView(
           children: [
             Padding(

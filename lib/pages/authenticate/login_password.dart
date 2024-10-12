@@ -189,6 +189,9 @@ class _LoginPassword extends State<LoginPassword> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your Password';
                         }
+                        else if (value.contains(' ')) {
+                          return 'Spaces are not acceptable';
+                        }
                         return null;
                       },
                     ),
