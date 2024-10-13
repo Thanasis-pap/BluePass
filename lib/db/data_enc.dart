@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:passwordmanager/global_dirs.dart';
+import 'package:csv/csv.dart';
 // Assuming AESHelper is defined
 
 class DatabaseHelper {
@@ -88,7 +88,9 @@ class DatabaseHelper {
     ''');
   }
 
-  // Password Table CRUD Operations
+  // CRUD OPERATIONS
+
+  //////// PASSWORDS ////////
 
   Future<int> insertPassword(Map<String, dynamic> password) async {
     Database db = await database;
@@ -102,43 +104,6 @@ class DatabaseHelper {
       'favorite': password['favorite'] ? 1 : 0,
     };
     return await db.insert('Passwords', encryptedPassword);
-  }
-
-  Future<List<Map<String, dynamic>>> getPasswords() async {
-    Database db = await database;
-    List<Map<String, dynamic>> passwords = await db.query('Passwords');
-    return Future.wait(passwords.map((password) async {
-      return {
-        'id': password['id'],
-        'name': password['name'],
-        'webpage': password['webpage'],
-        'username': await _aesHelper.decryptText(password['username']),
-        'password': await _aesHelper.decryptText(password['password']),
-        'notes': password['notes'],
-        'color': password['color'],
-        'favorite': password['favorite'].isOdd ?? false,
-      };
-    }));
-  }
-
-  Future<Map<String, dynamic>?> findPasswordById(int id) async {
-    Database db = await database;
-    List<Map<String, dynamic>> results =
-        await db.query('Passwords', where: 'id = ?', whereArgs: [id]);
-    if (results.isNotEmpty) {
-      Map<String, dynamic> password = results.first;
-      return {
-        'id': password['id'],
-        'name': password['name'],
-        'webpage': password['webpage'],
-        'username': await _aesHelper.decryptText(password['username']),
-        'password': await _aesHelper.decryptText(password['password']),
-        'notes': password['notes'],
-        'color': password['color'],
-        'favorite': password['favorite'].isOdd ?? false,
-      };
-    }
-    return null;
   }
 
   Future<int> editPassword(int id, Map<String, dynamic> password) async {
@@ -164,9 +129,21 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> deletePassword(int id) async {
+  Future<List<Map<String, dynamic>>> getPasswords() async {
     Database db = await database;
-    return await db.delete('Passwords', where: 'id = ?', whereArgs: [id]);
+    List<Map<String, dynamic>> passwords = await db.query('Passwords');
+    return Future.wait(passwords.map((password) async {
+      return {
+        'id': password['id'],
+        'name': password['name'],
+        'webpage': password['webpage'],
+        'username': await _aesHelper.decryptText(password['username']),
+        'password': await _aesHelper.decryptText(password['password']),
+        'notes': password['notes'],
+        'color': password['color'],
+        'favorite': password['favorite'].isOdd ?? false,
+      };
+    }));
   }
 
   Future<List<Map<String, dynamic>>> getFavoritePasswords() async {
@@ -192,25 +169,53 @@ class DatabaseHelper {
     }));
   }
 
+  Future<Map<String, dynamic>?> findPasswordById(int id) async {
+    Database db = await database;
+    List<Map<String, dynamic>> results =
+        await db.query('Passwords', where: 'id = ?', whereArgs: [id]);
+    if (results.isNotEmpty) {
+      Map<String, dynamic> password = results.first;
+      return {
+        'id': password['id'],
+        'name': password['name'],
+        'webpage': password['webpage'],
+        'username': await _aesHelper.decryptText(password['username']),
+        'password': await _aesHelper.decryptText(password['password']),
+        'notes': password['notes'],
+        'color': password['color'],
+        'favorite': password['favorite'].isOdd ?? false,
+      };
+    }
+    return null;
+  }
+
+  Future<int> deletePassword(int id) async {
+    Database db = await database;
+    return await db.delete('Passwords', where: 'id = ?', whereArgs: [id]);
+  }
+
   Future<void> reencryptPasswords(String key) async {
     Database db = await database;
 
     // Retrieve all password records
     List<Map<String, dynamic>> passwords = await db.query('Passwords');
 
-
     // Single loop: decrypt and re-encrypt, then store in the list
     for (var password in passwords) {
       // Decrypt fields
-      String decryptedUsername = await _aesHelper.decryptText(password['username']);
-      String decryptedPassword = await _aesHelper.decryptText(password['password']);
+      String decryptedUsername =
+          await _aesHelper.decryptText(password['username']);
+      String decryptedPassword =
+          await _aesHelper.decryptText(password['password']);
 
       // Re-encrypt fields
-      String encryptedUsername = await _aesHelper.encryptText(decryptedUsername,key);
-      String encryptedPassword = await _aesHelper.encryptText(decryptedPassword,key);
+      String encryptedUsername =
+          await _aesHelper.encryptText(decryptedUsername, key);
+      String encryptedPassword =
+          await _aesHelper.encryptText(decryptedPassword, key);
 
       await db.update(
-        'Passwords',                    // Table name
+        'Passwords', // Table name
         {
           'username': encryptedUsername, // Update with re-encrypted username
           'password': encryptedPassword, // Update with re-encrypted password
@@ -221,12 +226,13 @@ class DatabaseHelper {
           'color': password['color'],
           'favorite': password['favorite'], // Store original favorite value
         },
-        where: 'id = ?',                 // Condition for which row to update
-        whereArgs: [password['id']],     // Arguments for the WHERE clause
+        where: 'id = ?', // Condition for which row to update
+        whereArgs: [password['id']], // Arguments for the WHERE clause
       );
     }
   }
 
+  //////// CARDS ////////
 
   Future<int> insertCard(Map<String, dynamic> card) async {
     Database db = await database;
@@ -243,9 +249,28 @@ class DatabaseHelper {
     return await db.insert('Cards', encryptedCard);
   }
 
-  Future<int> deleteCard(int id) async {
+  Future<int> editCard(int id, Map<String, dynamic> card) async {
     Database db = await database;
-    return await db.delete('Cards', where: 'id = ?', whereArgs: [id]);
+
+    // Prepare the encrypted card fields using the same encryption helper
+    Map<String, dynamic> encryptedCard = {
+      'name': card['name'],
+      'card_holder': await _aesHelper.encryptText(card['card_holder']),
+      'card_number': await _aesHelper.encryptText(card['card_number']),
+      'expiration_date': await _aesHelper.encryptText(card['expiration_date']),
+      'cvv': await _aesHelper.encryptText(card['cvv']),
+      'notes': card['notes'],
+      'color': card['color'],
+      'favorite': card['favorite'] ? 1 : 0,
+    };
+
+    // Update the existing card in the database based on its primary key (id)
+    return await db.update(
+      'Cards', // Table name
+      encryptedCard, // Data to update
+      where: 'id = ?', // Condition for which row to update
+      whereArgs: [id], // Arguments for the WHERE clause
+    );
   }
 
   Future<List<Map<String, dynamic>>> getCards() async {
@@ -310,28 +335,9 @@ class DatabaseHelper {
     return null;
   }
 
-  Future<int> editCard(int id, Map<String, dynamic> card) async {
+  Future<int> deleteCard(int id) async {
     Database db = await database;
-
-    // Prepare the encrypted card fields using the same encryption helper
-    Map<String, dynamic> encryptedCard = {
-      'name': card['name'],
-      'card_holder': await _aesHelper.encryptText(card['card_holder']),
-      'card_number': await _aesHelper.encryptText(card['card_number']),
-      'expiration_date': await _aesHelper.encryptText(card['expiration_date']),
-      'cvv': await _aesHelper.encryptText(card['cvv']),
-      'notes': card['notes'],
-      'color': card['color'],
-      'favorite': card['favorite'] ? 1 : 0,
-    };
-
-    // Update the existing card in the database based on its primary key (id)
-    return await db.update(
-      'Cards', // Table name
-      encryptedCard, // Data to update
-      where: 'id = ?', // Condition for which row to update
-      whereArgs: [id], // Arguments for the WHERE clause
-    );
+    return await db.delete('Cards', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> reencryptCards(String key) async {
@@ -346,36 +352,46 @@ class DatabaseHelper {
     // Single loop: decrypt and re-encrypt, then store in the list
     for (var card in cards) {
       // Decrypt fields
-      String decryptedCardHolder = await _aesHelper.decryptText(card['card_holder']);
-      String decryptedCardNumber = await _aesHelper.decryptText(card['card_number']);
-      String decryptedExpirationDate = await _aesHelper.decryptText(card['expiration_date']);
+      String decryptedCardHolder =
+          await _aesHelper.decryptText(card['card_holder']);
+      String decryptedCardNumber =
+          await _aesHelper.decryptText(card['card_number']);
+      String decryptedExpirationDate =
+          await _aesHelper.decryptText(card['expiration_date']);
       String decryptedCvv = await _aesHelper.decryptText(card['cvv']);
 
       // Re-encrypt fields
-      String encryptedCardHolder = await _aesHelper.encryptText(decryptedCardHolder,key);
-      String encryptedCardNumber = await _aesHelper.encryptText(decryptedCardNumber,key);
-      String encryptedExpirationDate = await _aesHelper.encryptText(decryptedExpirationDate,key);
-      String encryptedCvv = await _aesHelper.encryptText(decryptedCvv,key);
+      String encryptedCardHolder =
+          await _aesHelper.encryptText(decryptedCardHolder, key);
+      String encryptedCardNumber =
+          await _aesHelper.encryptText(decryptedCardNumber, key);
+      String encryptedExpirationDate =
+          await _aesHelper.encryptText(decryptedExpirationDate, key);
+      String encryptedCvv = await _aesHelper.encryptText(decryptedCvv, key);
 
       await db.update(
-        'Cards',                       // Table name
+        'Cards', // Table name
         {
-          'card_holder': encryptedCardHolder, // Update with re-encrypted card holder
-          'card_number': encryptedCardNumber, // Update with re-encrypted card number
-          'expiration_date': encryptedExpirationDate, // Update with re-encrypted expiration date
-          'cvv': encryptedCvv,             // Update with re-encrypted CVV
+          'card_holder': encryptedCardHolder,
+          // Update with re-encrypted card holder
+          'card_number': encryptedCardNumber,
+          // Update with re-encrypted card number
+          'expiration_date': encryptedExpirationDate,
+          // Update with re-encrypted expiration date
+          'cvv': encryptedCvv,
+          // Update with re-encrypted CVV
           // Keep other fields unchanged
           'name': card['name'],
           'notes': card['notes'],
           'color': card['color'],
-          'favorite': card['favorite'], // Store original favorite value
+          'favorite': card['favorite'],
+          // Store original favorite value
         },
-        where: 'id = ?',                 // Condition for which row to update
-        whereArgs: [card['id']],         // Arguments for the WHERE clause
+        where: 'id = ?', // Condition for which row to update
+        whereArgs: [card['id']], // Arguments for the WHERE clause
       );
     }
   }
-
 
   Future<String?> getDownloadPath() async {
     Directory? directory;
@@ -386,16 +402,25 @@ class DatabaseHelper {
         directory = Directory('/storage/emulated/0/Download');
         // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
         // ignore: avoid_slow_async_io
-        if (!await directory.exists())
+        if (!await directory.exists()) {
           directory = await getExternalStorageDirectory();
+        }
       }
-    } catch (err, stack) {
+    } catch (err) {
       print("Cannot get download folder path");
     }
     return directory?.path;
   }
 
-  Future<void> exportDatabaseToDownloads() async {
+  // Function to request storage permission for Android
+  Future<void> requestStoragePermission() async {
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      throw Exception("Storage permission denied");
+    }
+  }
+
+  Future<void> exportDatabaseToCSV() async {
     try {
       // Ensure storage permission is granted
       PermissionStatus permission = await Permission.storage.request();
@@ -404,17 +429,71 @@ class DatabaseHelper {
         return;
       }
 
-      // Get the app's internal database file path
-      Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      String dbPath = join(documentsDirectory.path,
-          'secure_data_$_userId.db'); // Ensure you set the userId
+      Database db = await database;
 
-      File dbFile = File(dbPath);
+      // Query data from Passwords and Cards tables
+      List<Map<String, dynamic>> passwords = await db.query('Passwords');
+      List<Map<String, dynamic>> cards = await db.query('Cards');
 
-      if (!(await dbFile.exists())) {
-        print('Database file does not exist.');
-        return;
+      // Convert Passwords data to CSV format
+      List<List<dynamic>> passwordRows = [
+        [
+          'ID',
+          'Name',
+          'Webpage',
+          'Username',
+          'Password',
+          'Notes',
+          'Color',
+          'Favorite'
+        ] // Header row
+      ];
+
+      for (var password in passwords) {
+        passwordRows.add([
+          password['id'],
+          password['name'],
+          password['webpage'],
+          password['username'],
+          password['password'],
+          password['notes'],
+          password['color'],
+          password['favorite']
+        ]);
       }
+
+      // Convert Cards data to CSV format
+      List<List<dynamic>> cardRows = [
+        [
+          'ID',
+          'Name',
+          'Card Holder',
+          'Card Number',
+          'Expiration Date',
+          'CVV',
+          'Notes',
+          'Color',
+          'Favorite'
+        ] // Header row
+      ];
+
+      for (var card in cards) {
+        cardRows.add([
+          card['id'],
+          card['name'],
+          card['card_holder'],
+          card['card_number'],
+          card['expiration_date'],
+          card['cvv'],
+          card['notes'],
+          card['color'],
+          card['favorite']
+        ]);
+      }
+
+      // Convert the rows to CSV format
+      String passwordsCsv = const ListToCsvConverter().convert(passwordRows);
+      String cardsCsv = const ListToCsvConverter().convert(cardRows);
 
       // Get the path to the Downloads directory
       String? downloadsDirectory = await getDownloadPath();
@@ -424,22 +503,87 @@ class DatabaseHelper {
         return;
       }
 
-      String downloadsPath =
-          join(downloadsDirectory, 'secure_data_$_userId.db');
+      // Save the CSV files
+      String passwordsCsvPath =
+          join(downloadsDirectory, 'passwords_$_userId.csv');
+      String cardsCsvPath = join(downloadsDirectory, 'cards_$_userId.csv');
 
-      // Copy the database file to the Downloads directory
-      await dbFile.copy(downloadsPath);
-      print('Database file exported to Downloads: $downloadsPath');
+      File(passwordsCsvPath).writeAsStringSync(passwordsCsv);
+      File(cardsCsvPath).writeAsStringSync(cardsCsv);
+
+      print('Passwords and Cards exported to CSV files.');
     } catch (e) {
-      print('Error exporting database: $e');
+      print('Error exporting data to CSV: $e');
     }
   }
 
-  // Function to request storage permission for Android
-  Future<void> _requestStoragePermission() async {
-    var status = await Permission.storage.request();
-    if (!status.isGranted) {
-      throw Exception("Storage permission denied");
+  Future<String?> importDatabaseFromCSV(String key) async {
+    try {
+      // Open the file picker and allow the user to select both CSV files
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result != null && result.paths.isNotEmpty) {
+        for (var file in result.paths) {
+          if (file != null) {
+            File selectedFile = File(file);
+            if (!(await selectedFile.exists())) {
+              return 'File not found.';
+            }
+
+            // Read CSV content
+            String csvContent = await selectedFile.readAsString();
+            List<List<dynamic>> rows = const CsvToListConverter().convert(csvContent);
+
+            // Determine if it's a Password or Card CSV based on headers
+            if (rows.isNotEmpty && rows[0].contains('Webpage')) {
+              // Import Passwords
+              for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                row[3] = await _aesHelper.decryptText(row[3], key);
+                row[4] = await _aesHelper.decryptText(row[4], key);
+                await insertPassword({
+                  'name': row[1],
+                  'webpage': row[2],
+                  'username': row[3],
+                  'password': row[4],
+                  'notes': row[5],
+                  'color': row[6],
+                  'favorite': row[7] == 1,
+                });
+              }
+            } else if (rows.isNotEmpty && rows[0].contains('Card Holder')) {
+              // Import Cards
+              for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                row[2] = await _aesHelper.decryptText(row[2], key);
+                row[3] = await _aesHelper.decryptText(row[3], key);
+                row[4] = await _aesHelper.decryptText(row[4], key);
+                row[5] = await _aesHelper.decryptText(row[5], key);
+                await insertCard({
+                  'name': row[1],
+                  'card_holder':row[2],
+                  'card_number':row[3],
+                  'expiration_date':row[4],
+                  'cvv':row[5],
+                  'notes': row[6],
+                  'color': row[7],
+                  'favorite': row[8] == 1,
+                });
+              }
+            }
+          }
+        }
+        return null;
+      } else {
+        return 'No file selected';
+      }
+    } catch (e) {
+      print(e);
+      return 'Error importing CSV';
     }
   }
 }

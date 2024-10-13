@@ -23,6 +23,8 @@ export 'package:provider/provider.dart';
 export 'package:path_provider/path_provider.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:introduction_screen/introduction_screen.dart';
+//export 'package:open_file/open_file.dart';
+export 'package:file_picker/file_picker.dart';
 
 export 'package:passwordmanager/helpers/password_check.dart';
 export 'package:passwordmanager/helpers/biometric_helper.dart';
@@ -56,6 +58,11 @@ export 'package:passwordmanager/pages/settings/change_password.dart';
 export 'package:passwordmanager/pages/settings/edit_name.dart';
 export 'package:passwordmanager/pages/tools/export.dart';
 export 'package:passwordmanager/pages/tools/import.dart';
+export 'package:passwordmanager/helpers/delete_dialog.dart';
+export 'package:passwordmanager/helpers/export_dialog.dart';
+export 'package:passwordmanager/helpers/import_dialog.dart';
+
+
 
 
 

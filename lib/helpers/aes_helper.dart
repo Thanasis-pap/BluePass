@@ -10,10 +10,7 @@ class AESHelper {
   }
 
   Future<String> encryptText(String text,[String? keyBase64]) async {
-    if (keyBase64 == null) {
-      keyBase64 = (await _key)!;
-      //throw Exception('AES key is not available');
-    }
+    keyBase64 ??= (await _key)!;
     final key = encrypt.Key.fromBase64(keyBase64);
     final iv = encrypt.IV.fromSecureRandom(16);
     print(key.base64);
@@ -22,15 +19,14 @@ class AESHelper {
     return '${iv.base64} ${encrypted.base64}';
   }
 
-  Future<String> decryptText(String encryptedText) async {
-    String? keyBase64 = await _key;
+  Future<String> decryptText(String encryptedText,[String? keyBase64]) async {
+
     if (keyBase64 == null) {
-      throw Exception('AES key is not available');
+      keyBase64 = await _key;
     }
     String ivText = encryptedText.split(' ')[0];
     String text = encryptedText.split(' ')[1];
-    //print(ivText);
-    final key = encrypt.Key.fromBase64(keyBase64);
+    final key = encrypt.Key.fromBase64(keyBase64!);
     final iv = encrypt.IV.fromBase64(ivText);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final decrypted = encrypter.decrypt64(text, iv: iv);
