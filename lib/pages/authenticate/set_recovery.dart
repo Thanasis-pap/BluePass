@@ -1,18 +1,17 @@
 import 'package:passwordmanager/global_dirs.dart';
 
-class Import extends StatefulWidget {
-  const Import({super.key});
+class Export extends StatefulWidget {
+  const Export({super.key});
 
   @override
-  State<Import> createState() => _Import();
+  State<Export> createState() => _Export();
 }
 
-class _Import extends State<Import> {
+class _Export extends State<Export> {
   final dbHelper = DatabaseHelper();
-  final TextEditingController _textController = TextEditingController();
+
   late PageController _pageViewController;
   int currentPage = 0;
-  String encryptionKey = '';
 
   void getBool() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -26,39 +25,6 @@ class _Import extends State<Import> {
     setState(() {
       prefs.setBool('access', Global.savedValues['storage']);
     });
-  }
-
-  Future<bool> requestStoragePermission() async {
-    final plugin = DeviceInfoPlugin();
-    final android = await plugin.androidInfo;
-    final status = android.version.sdkInt < 33
-        ? await Permission.storage.request()
-        : await Permission.manageExternalStorage.request();
-
-    if (status.isGranted) {
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        style: ToastificationStyle.flat,
-        alignment: Alignment.bottomCenter,
-        showProgressBar: false,
-        title: const Text('Storage Access granted successfully'),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
-      goToNextPage();
-      return true;
-    } else {
-      toastification.show(
-        context: context,
-        type: ToastificationType.error,
-        style: ToastificationStyle.flat,
-        alignment: Alignment.bottomCenter,
-        showProgressBar: false,
-        title: const Text('Access Denied. Please try again to continue'),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
-      return false;
-    }
   }
 
   void goToNextPage() {
@@ -113,7 +79,7 @@ class _Import extends State<Import> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: const Text('Export Data', style: TextStyle(fontSize: (28))),
+          title: const Text('Security Questions', style: TextStyle(fontSize: (28))),
         ),
         body: Column(
           children: [
@@ -132,7 +98,7 @@ class _Import extends State<Import> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 0, horizontal: 30),
                           child: Text(
-                            'Grant Access',
+                            'Enable biometrics',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium
@@ -166,20 +132,20 @@ class _Import extends State<Import> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 30),
                             child: Text(
-                              "1. In order to import your data, you need to provide access to Android's local storage. \n\n"
-                              "2. Press the Button \"Grand Storage Access\" below, and then press the \"Allow\" button in the Android dialog that will appear. \n\n"
-                              "3. You can also grant access by heading to your Android's phone Settings. Navigate to Apps -> BluePass -> Permissions -> Files & media and press \"Allow access to media only\".\n\n",
+                              "1. In order to restore your password, you need to enable biometric authentication. \n\n"
+                              "2. Head to \"Settings\"->\"Security and Privacy\". \n\n"
+                              "3. Click on the \"Biometric Login\" toggle. \n\n"
+                              "4. If you have already enabled Biometric login, click \"Continue\". \n\n",
                               style: TextStyle(fontSize: 14),
                             )),
                         Align(
                           alignment: Alignment.center,
                           child: ElevatedButton(
                             onPressed: () async {
-                              Global.savedValues['storage'] = await requestStoragePermission();
                               setBool();
                             },
                             child: Text(
-                              'Request Storage Access',
+                              'Continue',
                               style: TextStyle(fontSize: 18),
                             ),
                           ),
@@ -195,7 +161,7 @@ class _Import extends State<Import> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 0, horizontal: 30),
                           child: Text(
-                            'Encryption Key',
+                            'Recovery Key',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium
@@ -209,41 +175,10 @@ class _Import extends State<Import> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 30),
                           child: Text(
-                            "1. On the following field, enter your Encryption Key that you stored when you exported your data.\n\n"
-                            "2. Press \"Import data\" and select your .db file with your data from your local storage. \n\n"
-                            "3. After you import the data, all data will be re-encrypted with a new encryption key. You can dispose your old key.",
+                            "1. Press \"Show Recovery Key\" to reveal your Recovery key. You need this key to recover your password\n\n"
+                            "2. Be VERY careful with your encryption key. DO NOT upload it anywhere or store it in a Notebook app. Otherwise you risk exposing your data. \n\n"
+                            "3. After you store your encryption key, press \"Export Data\" to save your data on your local storage.",
                             style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 30),
-                          child: TextFormField(
-                            maxLines: null,
-                            keyboardType: TextInputType.text,
-                            controller: _textController,
-                            decoration: InputDecoration(
-                              label: const Text('Encryption Key'),
-                              prefixIcon: const Icon(Icons.lock_rounded),
-                              filled: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            onSaved: (value) => encryptionKey = value!,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your Encryption Key';
-                              }
-                              else if (value.contains(' ')) {
-                                return 'Spaces are not acceptable';
-                              }
-                              return null;
-                            },
                           ),
                         ),
                         SizedBox(
@@ -253,24 +188,13 @@ class _Import extends State<Import> {
                           alignment: Alignment.center,
                           child: ElevatedButton(
                             onPressed: () async {
-                              await dbHelper.requestStoragePermission();
-                              String? message = await dbHelper
-                                  .importDatabaseFromCSV(_textController.text);
-                              print(message);
-                              toastification.show(
-                                context: context,
-                                type: message == null
-                                    ? ToastificationType.success
-                                    : ToastificationType.error,
-                                style: ToastificationStyle.flat,
-                                alignment: Alignment.bottomCenter,
-                                showProgressBar: false,
-                                title: Text(message ?? 'Data imported successfully'),
-                                autoCloseDuration: const Duration(seconds: 2),
-                              );
+                              showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      KeyDialog());
                             },
                             child: Text(
-                              'Import Data',
+                              'Show Encryption Key',
                               style: TextStyle(fontSize: 18),
                             ),
                           ),

@@ -23,7 +23,7 @@ class _Checker extends State<Checker> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('Password Strength Check'),
+        title: const Text('Password Strength Check',style: TextStyle(fontSize: 24),),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -43,7 +43,7 @@ class _Checker extends State<Checker> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                     color:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(20),
@@ -108,7 +108,6 @@ class _Checker extends State<Checker> {
                 PasswordStrengthFormChecker(
                   minimumStrengthRequired: PasswordStrength.secure,
                   onChanged: (password, notifier) {
-                    // Don't forget to update the notifier!
                     notifier.value = PasswordStrength.calculate(text: password);
                   },
                   textFormFieldConfiguration: TextFormFieldConfiguration(
@@ -153,8 +152,7 @@ class _Checker extends State<Checker> {
                   ),
                   passwordStrengthCheckerConfiguration:
                       PasswordStrengthCheckerConfiguration(
-                    inactiveBorderColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    inactiveBorderColor: Colors.transparent,
                   ),
                 ),
               ],

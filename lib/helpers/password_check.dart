@@ -45,7 +45,8 @@ class _PasswordCheckerState extends State<PasswordChecker> {
     RegExp(r'[A-Z]'): 'One uppercase letter',
     RegExp(r'[a-z]'): 'One lowercase letter',
     RegExp(r'\d'): 'One number',
-    RegExp(r'^.{8,32}$'): '8-32 characters',
+    RegExp(r'[!@#$%^&*(),.?":{}|<>]'): 'One special character',
+    RegExp(r'^.{12,32}$'): '12-32 characters',
   };
 
   @override

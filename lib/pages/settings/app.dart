@@ -63,7 +63,7 @@ class _AccountSettings extends State<AccountSettings> {
                 trailing: SizedBox(
                     width: 130,
                     child: Text(
-                      Global.name,
+                      Global.savedValues['name'],
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 14,
@@ -104,7 +104,7 @@ class _AccountSettings extends State<AccountSettings> {
                 trailing: PopupMenuButton<String>(
                   onSelected: (String newValue) {
                     setState(() {
-                      Global.themeMode = newValue;
+                      Global.savedValues['themeMode'] = newValue;
                       saveThemeToPreferences(newValue);
                       showDialog<String>(
                         context: context,
@@ -139,7 +139,7 @@ class _AccountSettings extends State<AccountSettings> {
                       // Adjust the size to fit content
                       children: [
                         Text(
-                          Global.themeMode,
+                      Global.savedValues['themeMode'],
                           style: const TextStyle(
                               fontSize: 14), // Text style
                         ),

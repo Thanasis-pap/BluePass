@@ -13,12 +13,22 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final BiometricHelper biometricHelper = BiometricHelper();
 
+  void checkUsernameSaved() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Global.savedValues['rememberUsername'] = prefs.getBool('rememberUsername') ?? false;
+    if (Global.savedValues['rememberUsername']) {
+      Global.savedValues['username'] = prefs.getString('username');
+      _passwordController.text = Global.savedValues['username'];
+      loginUser(Global.savedValues['username']);
+    }
+  }
 
-  void loginUser() async {
-    if (_formKey.currentState!.validate() && await dbHelper.loginBiometric(_passwordController.text)) {
+  void loginUser(String username) async {
+    if (_formKey.currentState!.validate() &&
+        await dbHelper.loginBiometric(username)) {
       _formKey.currentState!.save();
-      Map<String, dynamic> user = await dbHelper.loginName(_passwordController.text);
-      Global.name = user['name'];
+      Map<String, dynamic> user = await dbHelper.loginName(username);
+      Global.savedValues['name'] = user['name'];
       FocusManager.instance.primaryFocus?.unfocus();
       Navigator.push(
         context,
@@ -42,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    checkUsernameSaved();
   }
 
   @override
@@ -89,12 +100,12 @@ class _LoginPageState extends State<LoginPage> {
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      onSaved: (value) => Global.username = value!,
+                      onSaved: (value) =>
+                          Global.savedValues['username'] = value!,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your Username';
-                        }
-                        else if (value.contains(' ')) {
+                        } else if (value.contains(' ')) {
                           return 'Spaces are not acceptable';
                         }
                         return null;
@@ -102,11 +113,13 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
-                      onPressed: loginUser,
+                      onPressed: () {
+                        loginUser(_passwordController.text);
+                      },
                       child: const Text('Next'),
                     ),
                     const SizedBox(height: 10),
-                    TextButton(
+                    /*TextButton(
                       onPressed: () {
                         Navigator.of(context).pushAndRemoveUntil(
                             LeftPageRoute(
@@ -115,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
 
                       child: const Text('No account? Register'),
-                    ),
+                    ),*/
                   ],
                 ),
               ),

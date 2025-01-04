@@ -66,8 +66,7 @@ class _CardList extends State<CardsList> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           scrolledUnderElevation: 0,
           toolbarHeight: 100,
-          title:
-              Text('Cards', style: TextStyle(fontSize: (28))),
+          title: Text('Cards', style: TextStyle(fontSize: (28))),
           actions: selectedCards.isNotEmpty
               ? [
                   Padding(
@@ -90,8 +89,7 @@ class _CardList extends State<CardsList> {
                                     Navigator.pop(context, 'Cancel');
                                   },
                                   child: Text('Cancel',
-                                      style:
-                                          TextStyle(fontSize: 18)),
+                                      style: TextStyle(fontSize: 18)),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -109,8 +107,7 @@ class _CardList extends State<CardsList> {
                                     Navigator.pop(context, 'Yes');
                                   },
                                   child: Text('Yes',
-                                      style:
-                                          TextStyle(fontSize: 18)),
+                                      style: TextStyle(fontSize: 18)),
                                 ),
                               ],
                             ),
@@ -120,6 +117,18 @@ class _CardList extends State<CardsList> {
                 ]
               : [], // Show delete button if any card is selected
         ),
+        floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          const EditCard(title: "New Card", data: null))).then((value) {Navigator.pop(context);});
+            },
+            icon: Icon(Icons.add_card_rounded),
+            backgroundColor: Color(0xFF3F7BD7),
+            foregroundColor: Colors.white,
+            label: Text('Add Card')),
         body: widget.cardData.isNotEmpty
             ? ListView(
                 children: widget.cardData.map((card) {
@@ -202,14 +211,22 @@ class _CardList extends State<CardsList> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.credit_card_off_rounded,size: 50,color: Colors.grey,),
-                    SizedBox(height: 10,),
+                    Icon(
+                      Icons.credit_card_off_rounded,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Text(
-                      'Nothing here yet.',
-                      style: TextStyle(fontSize: 18,color: Colors.grey),
+                      'Nothing here yet',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
                       maxLines: 2,
                     ),
-                    SizedBox(height: 100,)
+                    SizedBox(
+                      height: 100,
+                    )
                   ],
                 ),
               ),

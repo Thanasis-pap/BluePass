@@ -43,7 +43,7 @@ class _ChangeUsername extends State<ChangeUsername> {
                 onPressed: () async {
                   int result =
                   await dbHelper.editUser(user['id'], null, newUsername, null);
-                  Global.username = newUsername;
+                  Global.savedValues['username'] = newUsername;
                   toastification.show(
                     context: context,
                     type: ToastificationType.success,
@@ -112,7 +112,7 @@ class _ChangeUsername extends State<ChangeUsername> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your Username';
-                      } else if (value != Global.username) {
+                      } else if (value != Global.savedValues['username']) {
                         return 'Wrong Username.';
                       }
                       return null;

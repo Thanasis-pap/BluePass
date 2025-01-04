@@ -1,5 +1,9 @@
 import 'package:passwordmanager/global_dirs.dart';
 
+enum SampleItem { info, logOut }
+
+enum Favorite { favorite }
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
     super.key,
@@ -13,6 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _key = GlobalKey<ExpandableFabState>();
   final recentHelper = Recent();
   final dbHelper = DatabaseHelper();
+  SampleItem? selectedItem;
   List<Map<String, dynamic>?> recentItems = [];
   List<Map<String, dynamic>?> favorItems = [];
   List<Map<String, dynamic>> searchItems = [];
@@ -88,16 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> fetchFavoriteItems() async {
     List<Map<String, dynamic>> favoriteItems = [];
 
-    // Fetch favorite cards from the database where favorite = 1
-    List<Map<String, dynamic>> favoriteCards =
-        await dbHelper.getFavoriteCards();
-    // Add the 'type' field to each card item
-    favoriteCards = favoriteCards.map((card) {
-      card['type'] = 'card';
-      return card;
-    }).toList();
-    favoriteItems.addAll(favoriteCards);
-
     // Fetch favorite passwords from the database where favorite = 1
     List<Map<String, dynamic>> favoritePasswords =
         await dbHelper.getFavoritePasswords();
@@ -108,10 +103,20 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
     favoriteItems.addAll(favoritePasswords);
 
+    List<Map<String, dynamic>> favoriteCards =
+    await dbHelper.getFavoriteCards();
+    // Add the 'type' field to each card item
+    favoriteCards = favoriteCards.map((card) {
+      card['type'] = 'card';
+      return card;
+    }).toList();
+    favoriteItems.addAll(favoriteCards);
+
     setState(() {
       favorItems = favoriteItems; // Update the state with favorite items
     });
   }
+
 
   void toggleOptions() {
     setState(() {
@@ -138,9 +143,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: Color(0xFF3F7BD7), // Status bar
+        ),
         toolbarHeight: 100,
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -148,17 +153,115 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset('assets/password.png', width: 30),
-            SizedBox(
-              width: 15,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "BluePass",
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: 280,
-              child: Text("Hello, ${Global.name.split(" ")[0]}",
-                  style: const TextStyle(
-                      fontSize: (28), overflow: TextOverflow.fade)),
-            )
+            PopupMenuButton<SampleItem>(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(15), // Set the desired radius here
+                ),
+              ),
+              offset: Offset(0, 10),
+              position: PopupMenuPosition.under,
+              initialValue: null,
+              icon: CircleAvatar(
+                backgroundColor: const Color(0xFF1A32CC),
+                radius: 20,
+                child: Text(Global.savedValues['name'][0],
+                    style: const TextStyle(fontSize: 25, color: Colors.white)),
+              ),
+              onSelected: (SampleItem item) {
+                setState(() {
+                  selectedItem = item;
+                });
+              },
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuEntry<SampleItem>>[
+                PopupMenuItem<SampleItem>(
+                  value: SampleItem.info,
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.settings_rounded,
+                      size: 24,
+                      color: Color(0xFF1A32CC),
+                    ),
+                    title: Text(
+                      'Settings',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => Settings()))
+                        .then((value) {
+                      setState(() {});
+                    });
+                  },
+                ),
+                PopupMenuItem<SampleItem>(
+                  value: SampleItem.logOut,
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.logout_rounded,
+                      size: 24,
+                      color: Colors.red,
+                    ),
+                    title: Text(
+                      'Log Out',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  onTap: () {
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Warning',
+                            style: TextStyle(fontSize: 25)),
+                        content: const Text('Are you sure you want to log out?',
+                            style: TextStyle(fontSize: 16)),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, 'Cancel');
+                            },
+                            child:
+                                Text('Cancel', style: TextStyle(fontSize: 18)),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              toastification.show(
+                                context: context,
+                                style: ToastificationStyle.flat,
+                                alignment: Alignment.bottomCenter,
+                                showProgressBar: false,
+                                title: const Text('Logged out successfully.'),
+                                autoCloseDuration: const Duration(seconds: 2),
+                              );
+                              Navigator.pop(context, 'Yes');
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  LeftPageRoute(page: const LoginPage()),
+                                  (Route<dynamic> route) => false);
+                            },
+                            child: Text('Yes', style: TextStyle(fontSize: 18)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ],
         ),
         centerTitle: false,
@@ -166,7 +269,14 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
         openButtonBuilder: DefaultFloatingActionButtonBuilder(
+          backgroundColor: Color(0xFF3F7BD7),
+          foregroundColor: Colors.white,
           child: const Icon(Icons.add),
+        ),
+        closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+          backgroundColor: Color(0xFF3F7BD7),
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.close),
         ),
         key: _key,
         type: ExpandableFabType.up,
@@ -181,16 +291,20 @@ class _MyHomePageState extends State<MyHomePage> {
               const Text('Add Card', style: TextStyle(fontSize: 18)),
               const SizedBox(width: 20),
               FloatingActionButton(
+                backgroundColor: Color(0xFF3F7BD7),
+                foregroundColor: Colors.white,
                 heroTag: null,
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => const EditCard(
-                              title: "New Card", data: null))).then((value) {
-                    fetchFavoriteItems();
-                    fetchRecentItems();
-                    fetchAllItems();
+                              title: "New Card", data: null))).then((context) {
+                    setState(() {
+                      fetchAllItems();
+                      fetchFavoriteItems();
+                      fetchRecentItems();
+                    });
                   });
                   final state = _key.currentState;
                   if (state != null) {
@@ -206,6 +320,8 @@ class _MyHomePageState extends State<MyHomePage> {
               const Text('Add Password', style: TextStyle(fontSize: 18)),
               const SizedBox(width: 20),
               FloatingActionButton(
+                backgroundColor: Color(0xFF3F7BD7),
+                foregroundColor: Colors.white,
                 heroTag: null,
                 onPressed: () {
                   Navigator.push(
@@ -213,10 +329,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(
                           builder: (_) => const EditPassword(
                               title: "New Password",
-                              data: null))).then((value) {
-                    fetchFavoriteItems();
-                    fetchRecentItems();
-                    fetchAllItems();
+                              data: null))).then((context) {
+                    setState(() {
+                      fetchAllItems();
+                      fetchFavoriteItems();
+                      fetchRecentItems();
+                    });
                   });
                   final state = _key.currentState;
                   if (state != null) {
@@ -240,24 +358,19 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home, size: 32),
-            icon: Icon(Icons.home_outlined, size: 32),
+            selectedIcon: Icon(Icons.home_rounded, size: 32),
+            icon: Icon(Icons.home_rounded, size: 32),
             label: 'Home',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.search, size: 32),
-            icon: Icon(Icons.search_outlined, size: 32),
+            selectedIcon: Icon(Icons.search_rounded, size: 32),
+            icon: Icon(Icons.search_rounded, size: 32),
             label: 'Search',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.password, size: 32),
-            icon: Icon(Icons.password_outlined, size: 32),
-            label: 'Passwords',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.settings, size: 32),
-            icon: Icon(Icons.settings_outlined, size: 32),
-            label: 'Settings',
+            selectedIcon: Icon(Icons.password_rounded, size: 32),
+            icon: Icon(Icons.password_rounded, size: 32),
+            label: 'Categories',
           ),
         ],
       ),
@@ -267,125 +380,194 @@ class _MyHomePageState extends State<MyHomePage> {
             //shrinkWrap: true,
             padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
             children: <Widget>[
-              Text(
-                'Favorites',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 140, // Define the height for the horizontal list
-                child: favorItems.isEmpty
-                    ? const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.star_border_rounded,
-                                size: 50, color: Colors.grey),
-                            Text(
-                              'No favorite items',
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.grey),
+              favorItems.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        'Favorites',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                      )
-                    : ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: favorItems.length,
-                        itemBuilder: (context, index) {
-                          final item = favorItems[index];
-                          return SizedBox(
-                            width: 180,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 5),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (item != null) {
-                                    if (item['type'] == 'password') {
-                                      Recent.openPassword(item['id']);
-                                      Navigator.push(
+                      ),
+                    )
+                  : SizedBox(),
+              favorItems.isNotEmpty
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: 20),
+                      child: SizedBox(
+                        height:
+                            140, // Define the height for the horizontal list
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: favorItems.length,
+                            itemBuilder: (context, index) {
+                              final item = favorItems[index];
+                              return SizedBox(
+                                width: 180,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 5),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (item != null) {
+                                        if (item['type'] == 'password') {
+                                          Recent.openPassword(item['id']);
+                                          Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) => PasswordPage(
-                                                      password: item)))
-                                          .then((context) {
-                                        setState(() {
-                                          fetchAllItems();
-                                          fetchFavoriteItems();
-                                          fetchRecentItems();
-                                        });
-                                      });
-                                    } else {
-                                      Recent.openCard(item['id']);
-                                      Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      CardPage(card: item)))
-                                          .then((context) {
-                                        setState(() {
-                                          fetchAllItems();
-                                          fetchFavoriteItems();
-                                          fetchRecentItems();
-                                        });
-                                      });
-                                    }
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  padding: EdgeInsets.zero,
-                                  backgroundColor:
-                                      Color(int.parse(item?['color']))
-                                          .withOpacity(0.7),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(25), // <-- Radius
-                                  ),
-                                ),
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  // Center the content in the button
-                                  children: [
-                                    // Faded, scaled background icon
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Opacity(
-                                        opacity: 1,
-                                        // Set the fade effect (0.0 is fully transparent, 1.0 is fully opaque)
-                                        child: Icon(
-                                            item?['type'] == 'password'
-                                                ? Icons.lock_outline_rounded
-                                                : Icons.credit_card_rounded,
-                                            size: 100,
-                                            // Scale the icon larger than the button
-                                            color: Color(
-                                                int.parse(item?['color']))),
+                                                      password: item))).then(
+                                              (context) {
+                                            setState(() {
+                                              fetchAllItems();
+                                              fetchFavoriteItems();
+                                              fetchRecentItems();
+                                            });
+                                          });
+                                        } else {
+                                          Recent.openCard(item['id']);
+                                          Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          CardPage(card: item)))
+                                              .then((context) {
+                                            setState(() {
+                                              fetchAllItems();
+                                              fetchFavoriteItems();
+                                              fetchRecentItems();
+                                            });
+                                          });
+                                        }
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor:
+                                          Color(int.parse(item?['color']))
+                                              .withOpacity(0.7),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            25), // <-- Radius
                                       ),
                                     ),
-                                    // Text on top of the button
-                                    Text(
-                                      overflow: TextOverflow.ellipsis,
-                                      item?['name'],
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      // Center the content in the button
+                                      children: [
+                                        // Faded, scaled background icon
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Opacity(
+                                            opacity: 1,
+                                            // Set the fade effect (0.0 is fully transparent, 1.0 is fully opaque)
+                                            child: Icon(
+                                                item?['type'] == 'password'
+                                                    ? Icons.lock_outline_rounded
+                                                    : Icons.credit_card_rounded,
+                                                size: 100,
+                                                // Scale the icon larger than the button
+                                                color: Color(
+                                                    int.parse(item?['color']))),
+                                          ),
+                                        ),
+                                        // Text on top of the button
+                                        Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 15, horizontal: 15),
+                                            child: Text(
+                                              overflow: TextOverflow.ellipsis,
+                                              item?['name'],
+                                              style: const TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: PopupMenuButton<SampleItem>(
+                                            icon: Icon(Icons.more_vert_rounded,
+                                              color: Colors.white,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                    15), // Set the desired radius here
+                                              ),
+                                            ),
+                                            offset: Offset(0, 10),
+                                            position: PopupMenuPosition.under,
+                                            initialValue: null,
+                                            onSelected: (SampleItem item) {
+                                              setState(() {
+                                                selectedItem = item;
+                                              });
+                                            },
+                                            itemBuilder: (BuildContext
+                                                    context) =>
+                                                <PopupMenuEntry<SampleItem>>[
+                                              PopupMenuItem<SampleItem>(
+                                                value: SampleItem.info,
+                                                height: 35,
+                                                onTap: () async {
+                                                  if (item?['type'] ==
+                                                      'password') {
+                                                    item?['favorite'] = false;
+                                                    await dbHelper.editPassword(
+                                                        item?['id'], item!);
+                                                    setState(() {
+                                                      fetchFavoriteItems();
+                                                      fetchRecentItems();
+                                                    });
+                                                  } else if (item?['type'] ==
+                                                      'card') {
+                                                    item?['favorite'] = false;
+                                                    await dbHelper.editCard(
+                                                        item?['id'], item!);
+                                                    toastification.show(
+                                                      context: context,
+                                                      style: ToastificationStyle
+                                                          .flat,
+                                                      alignment: Alignment
+                                                          .bottomCenter,
+                                                      showProgressBar: false,
+                                                      title: Text(
+                                                          'Removed from favorites'),
+                                                      autoCloseDuration:
+                                                          const Duration(
+                                                              seconds: 2),
+                                                    );
+                                                    setState(() {
+                                                      fetchFavoriteItems();
+                                                      fetchRecentItems();
+                                                    });
+                                                  }
+                                                },
+                                                child: Text(
+                                                    'Remove from Favorites'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }),
-              ),
-              const SizedBox(height: 20),
+                              );
+                            }),
+                      ),
+                    )
+                  : SizedBox(),
               Text(
                 'Tools',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -490,6 +672,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                         fontSize: 18,
                                       ),
                                     ),
+                                    trailing: item?['type'] == 'password'
+                                        ? IconButton(
+                                            icon: const Icon(Icons.copy),
+                                            onPressed: () {
+                                              Clipboard.setData(ClipboardData(
+                                                      text: item?['password']))
+                                                  .then((_) {
+                                                toastification.show(
+                                                  context: context,
+                                                  type: ToastificationType
+                                                      .success,
+                                                  style:
+                                                      ToastificationStyle.flat,
+                                                  alignment:
+                                                      Alignment.bottomCenter,
+                                                  showProgressBar: false,
+                                                  title: const Text(
+                                                      'Copied successfully'),
+                                                  autoCloseDuration:
+                                                      const Duration(
+                                                          milliseconds: 1500),
+                                                );
+                                              });
+                                            },
+                                          )
+                                        : SizedBox(),
                                     leading: Icon(
                                       item?['type'] == 'password'
                                           ? Icons.lock_outline_rounded
@@ -512,158 +720,170 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        SingleChildScrollView(
-          child: Column(
-              //direction: Axis.vertical,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
-                  child: Text(
-                    'Search',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+        ListView(
+            //direction: Axis.vertical,
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            //mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                child: Text(
+                  'Search',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (value) {
-                      filterItems(value); // Filter items based on search input
-                    },
-                    decoration: InputDecoration(
-                      label: const Text(
-                        'Search passwords or cards',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    filterItems(value); // Filter items based on search input
+                  },
+                  decoration: InputDecoration(
+                    label: const Text(
+                      'Search passwords or cards',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
                     ),
                   ),
                 ),
-                filteredItems.isEmpty
-                    ? Align(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 50.0),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.search_off_rounded,
-                                size: 40,
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'Nothing here yet.', // Initial message
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : Animate(
-                        effects: [
-                          FadeEffect(),
-                        ],
-                        child: Expanded(
-                          child: filteredItems.isNotEmpty
-                              ? ListView.builder(
-                                  itemCount: filteredItems.length,
-                                  itemBuilder: (context, index) {
-                                    Map<String, dynamic> item =
-                                        filteredItems[index];
-                                    bool isCard = item.containsKey(
-                                        'card_number'); // Assuming card has 'card_number'
-
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 30.0),
-                                      child: SizedBox(
-                                        height: 65,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            padding: EdgeInsets.zero,
-                                            elevation: 0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            // If it's a card, handle card click
-                                            if (isCard) {
-                                              Recent.openCard(item['id']);
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (_) => CardPage(
-                                                          card: item))).then(
-                                                  (context) {
-                                                setState(() {
-                                                  fetchFavoriteItems();
-                                                  fetchRecentItems();
-                                                  fetchAllItems();
-                                                });
-                                              });
-                                              // Navigate to card details or handle another action
-                                            } else {
-                                              Recent.openPassword(item['id']);
-                                              Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              PasswordPage(
-                                                                  password:
-                                                                      item)))
-                                                  .then((context) {
-                                                setState(() {
-                                                  fetchFavoriteItems();
-                                                  fetchRecentItems();
-                                                  fetchAllItems();
-                                                });
-                                              });
-                                              // Navigate to password details or handle another action
-                                            }
-                                          },
-                                          child: ListTile(
-                                            title: Text(
-                                              item['name'], // Display name
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            leading: isCard
-                                                ? const Icon(
-                                                    Icons.credit_card_rounded,
-                                                    size: 40,
-                                                  )
-                                                : const Icon(
-                                                    Icons.lock_outline_rounded,
-                                                    size: 40,
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                )
-                              : const Center(
-                                  child: Text('No results found'),
-                                ),
+              ),
+              filteredItems.isEmpty
+                  ? Align(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 50.0),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 40,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'Nothing here yet.', // Initial message
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ],
                         ),
                       ),
-              ]),
-        ),
+                    )
+                  : Animate(
+                      effects: [
+                        FadeEffect(),
+                      ],
+                      child: filteredItems.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              itemCount: filteredItems.length,
+                              itemBuilder: (context, index) {
+                                Map<String, dynamic> item =
+                                    filteredItems[index];
+                                bool isCard = item.containsKey(
+                                    'card_number'); // Assuming card has 'card_number'
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 30.0),
+                                  child: SizedBox(
+                                    height: 65,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        // If it's a card, handle card click
+                                        if (isCard) {
+                                          Recent.openCard(item['id']);
+                                          Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          CardPage(card: item)))
+                                              .then((context) {
+                                            setState(() {
+                                              fetchFavoriteItems();
+                                              fetchRecentItems();
+                                              fetchAllItems();
+                                            });
+                                          });
+                                          // Navigate to card details or handle another action
+                                        } else {
+                                          Recent.openPassword(item['id']);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) => PasswordPage(
+                                                      password: item))).then(
+                                              (context) {
+                                            setState(() {
+                                              fetchFavoriteItems();
+                                              fetchRecentItems();
+                                              fetchAllItems();
+                                            });
+                                          });
+                                          // Navigate to password details or handle another action
+                                        }
+                                      },
+                                      child: ListTile(
+                                        title: Text(
+                                          item['name'], // Display name
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        leading: isCard
+                                            ? const Icon(
+                                                Icons.credit_card_rounded,
+                                                size: 40,
+                                              )
+                                            : const Icon(
+                                                Icons.lock_outline_rounded,
+                                                size: 40,
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 50.0),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.search_off_rounded,
+                                    size: 40,
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Nothing here yet.', // Initial message
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                            ),
+                    ),
+            ]),
         ListView(
           children: [
             Padding(
@@ -797,9 +1017,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ],
-        ),
-        ListView(
-          children: Settings.settingsCategories(context),
         ),
       ][currentPageIndex],
     );

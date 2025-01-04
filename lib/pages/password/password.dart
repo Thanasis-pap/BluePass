@@ -50,20 +50,14 @@ class _PasswordPage extends State<PasswordPage> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(Global.password['name']),
+          title: Text(Global.password['name'],overflow: TextOverflow.fade),
           actions: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal:10.0),
               child: Row(
+
                 children: [
-                  IconButton(
-                    icon: const Icon(size: 30, Icons.edit_rounded),
-                    color: const Color(0xFF3F7BD7),
-                    onPressed: () {
-                      navigateToEditPassword(Global.password);
-                    },
-                  ),
                   IconButton(
                     icon: Icon(
                         size: 30,
@@ -74,7 +68,7 @@ class _PasswordPage extends State<PasswordPage> {
                     onPressed: () {
                       setState(() {
                         Global.password['favorite'] =
-                            !Global.password['favorite'];
+                        !Global.password['favorite'];
                         toastification.show(
                           context: context,
                           style: ToastificationStyle.flat,
@@ -88,6 +82,60 @@ class _PasswordPage extends State<PasswordPage> {
                         dbHelper.editPassword(
                             Global.password['id'], Global.password);
                       }); // Handle delete action
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(size: 30, Icons.edit_rounded),
+                    color: const Color(0xFF3F7BD7),
+                    onPressed: () {
+                      navigateToEditPassword(Global.password);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    color: const Color(0xFF3F7BD7),
+                    onPressed: () {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Warning',
+                              style: TextStyle(fontSize: 28)),
+                          content: const Text(
+                              'Are you sure you want to delete this password?',
+                              style: TextStyle(fontSize: 18)),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Cancel');
+                              },
+                              child: Text('Cancel',
+                                  style: TextStyle(fontSize: 18)),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await dbHelper.deletePassword(Global.password['id']);
+                                toastification.show(
+                                  context: context,
+                                  style: ToastificationStyle.flat,
+                                  alignment: Alignment.bottomCenter,
+                                  showProgressBar: false,
+                                  title: const Text(
+                                      'Password has been deleted'),
+                                  autoCloseDuration: const Duration(seconds: 2),
+                                );
+                                Navigator.pop(context);
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => MyHomePage(),
+                                    ),
+                                        (Route<dynamic> route) => false);
+                              },
+                              child:
+                                  Text('Yes', style: TextStyle(fontSize: 18)),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -106,7 +154,7 @@ class _PasswordPage extends State<PasswordPage> {
                   child: Center(
                     child: ListTile(
                       title: Text(
-                        'Username',
+                        'Username / E-mail',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -128,7 +176,8 @@ class _PasswordPage extends State<PasswordPage> {
                                   alignment: Alignment.bottomCenter,
                                   showProgressBar: false,
                                   title: const Text('Copied successfully'),
-                                  autoCloseDuration: const Duration(milliseconds: 1500),
+                                  autoCloseDuration:
+                                      const Duration(milliseconds: 1500),
                                 );
                               });
                             },
@@ -180,7 +229,8 @@ class _PasswordPage extends State<PasswordPage> {
                                   alignment: Alignment.bottomCenter,
                                   showProgressBar: false,
                                   title: const Text('Copied successfully'),
-                                  autoCloseDuration: const Duration(milliseconds: 1500),
+                                  autoCloseDuration:
+                                      const Duration(milliseconds: 1500),
                                 );
                               });
                             },

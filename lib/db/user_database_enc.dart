@@ -29,13 +29,22 @@ class UserDatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('DROP TABLE IF EXISTS users');
     await db.execute('''
-      CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT UNIQUE,
-        password TEXT
-      )
-    ''');
+    CREATE TABLE users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      email TEXT UNIQUE,
+      password TEXT
+    )
+  ''');
+
+    await db.execute('DROP TABLE IF EXISTS security_questions');
+    await db.execute('''
+    CREATE TABLE security_questions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      question TEXT,
+      answer TEXT
+    )
+  ''');
   }
 
   // Register user with encrypted email and password
@@ -127,12 +136,14 @@ class UserDatabaseHelper {
       // Safely check if 'email' and 'password' exist and are not null
       if (user['email'] != null && user['password'] != null) {
         // Decrypt the stored email
-        String decryptedEmail = await _aesHelper.decryptText(user['email'] as String); // Cast 'email' to String
+        String decryptedEmail = await _aesHelper
+            .decryptText(user['email'] as String); // Cast 'email' to String
 
         // Compare the decrypted email with the provided email
         if (decryptedEmail == email) {
           // Decrypt the stored password
-          String decryptedPassword = await _aesHelper.decryptText(user['password'] as String); // Cast 'password' to String
+          String decryptedPassword = await _aesHelper.decryptText(
+              user['password'] as String); // Cast 'password' to String
 
           // Check if the provided password matches the decrypted password
           if (password == decryptedPassword) {
@@ -145,7 +156,6 @@ class UserDatabaseHelper {
     return null; // Login failed
   }
 
-
   Future<bool> loginBiometric(String email) async {
     final db = await database;
 
@@ -157,18 +167,18 @@ class UserDatabaseHelper {
       // Safely check if 'email' exists and is not null
       if (user['email'] != null) {
         // Decrypt the stored email
-        String decryptedEmail = await _aesHelper.decryptText(user['email'] as String); // Cast 'email' to String
+        String decryptedEmail = await _aesHelper
+            .decryptText(user['email'] as String); // Cast 'email' to String
 
         // Compare the decrypted email with the provided email
         if (decryptedEmail == email) {
-          return true;  // Biometric login successful
+          return true; // Biometric login successful
         }
       }
     }
 
-    return false;  // Biometric login failed
+    return false; // Biometric login failed
   }
-
 
   Future<Map<String, dynamic>> loginName(String username) async {
     final db = await database;
@@ -200,14 +210,17 @@ class UserDatabaseHelper {
     for (var user in users) {
       // Safely check if 'email' and 'password' exist and are not null
       if (user['email'] != null && user['password'] != null) {
-
         // 1. Decrypt the stored email and password
-        String decryptedEmail = await _aesHelper.decryptText(user['email'] as String);
-        String decryptedPassword = await _aesHelper.decryptText(user['password'] as String);
+        String decryptedEmail =
+            await _aesHelper.decryptText(user['email'] as String);
+        String decryptedPassword =
+            await _aesHelper.decryptText(user['password'] as String);
 
         // 2. Re-encrypt the email and password with new encryption logic (if needed)
-        String reEncryptedEmail = await _aesHelper.encryptText(decryptedEmail,key);
-        String reEncryptedPassword = await _aesHelper.encryptText(decryptedPassword,key);
+        String reEncryptedEmail =
+            await _aesHelper.encryptText(decryptedEmail, key);
+        String reEncryptedPassword =
+            await _aesHelper.encryptText(decryptedPassword, key);
 
         // 3. Update the database record with the newly encrypted values
         await db.update(
@@ -218,13 +231,74 @@ class UserDatabaseHelper {
             },
             where: 'id = ?', // Update the record based on the user's ID
             whereArgs: [user['id']] // The ID of the user to update
-        );
+            );
       }
     }
 
     print('All user data re-encrypted successfully');
   }
 
+  // Add security questions for a user
+  Future<void> saveSecurityQuestions(List<Map<String, dynamic>> questions) async {
+    final db = await database;
+
+    // Ensure that the table has exactly 3 questions by deleting any existing ones
+    await db.delete('security_questions');  // Delete all existing questions
+
+    // Insert the new questions into the table
+    for (var question in questions) {
+      String questionText = question['question'];
+      String encryptedAnswer = await _aesHelper.encryptText(question['answer']);
+
+      // Insert each question with the encrypted answer
+      await db.insert('security_questions', {
+        'question': questionText,
+        'answer': encryptedAnswer,
+      });
+    }
+  }
 
 
+  // Retrieve security questions and answers for a user
+  Future<List<Map<String, dynamic>>> getSecurityQuestions() async {
+    final db = await database;
+    final result = await db.query('security_questions');
+    return Future.wait(result.map((entry) async {
+      return {
+        'question': entry['question'] as String,
+        'answer': await _aesHelper.decryptText(
+          entry['answer'] as String,
+        )
+      };
+    }));
+  }
+
+  // Verify security question answers
+  Future<bool> verifySecurityAnswers(List<Map<String, dynamic>> answers) async {
+    final db = await database;
+
+    for (var answer in answers) {
+      int questionId = answer['question_id'];
+      String providedAnswer = answer['answer'];
+
+      final result = await db.query(
+        'security_questions',
+        where: 'question_id = ?',
+        whereArgs: [questionId],
+      );
+
+      if (result.isEmpty) {
+        return false;
+      }
+
+      String storedEncryptedAnswer = result.first['answer'] as String;
+      String storedAnswer = await _aesHelper.decryptText(storedEncryptedAnswer);
+
+      if (storedAnswer != providedAnswer) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

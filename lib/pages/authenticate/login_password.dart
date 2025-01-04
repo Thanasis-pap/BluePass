@@ -16,11 +16,12 @@ class _LoginPassword extends State<LoginPassword> {
 
   void getParams() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Map<String, dynamic> user = await dbHelper.loginName(Global.username);
+    Map<String, dynamic> user =
+        await dbHelper.loginName(Global.savedValues['username']);
     setState(() {
-      Global.auth = prefs.getBool(user['id'].toString()) ?? false;
+      Global.savedValues['auth'] = prefs.getBool('auth${user['id']}') ?? false;
     });
-    if (Global.auth) {
+    if (Global.savedValues['auth']) {
       checkBiometricAndAuthenticate();
     }
   }
@@ -29,9 +30,10 @@ class _LoginPassword extends State<LoginPassword> {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      final user = await dbHelper.loginUser(Global.username, password);
+      final user =
+          await dbHelper.loginUser(Global.savedValues['username'], password);
       if (user != null) {
-        DatabaseHelper().setUser(user['id'].toString());
+        DatabaseHelper().setUser('auth${user['id']}');
         toastification.show(
           context: context,
           type: ToastificationType.success,
@@ -62,13 +64,15 @@ class _LoginPassword extends State<LoginPassword> {
 
   // Check if biometric authentication is available and authenticate
   Future<void> checkBiometricAndAuthenticate() async {
-    bool userExists = await dbHelper.loginBiometric(Global.username);
+    bool userExists =
+        await dbHelper.loginBiometric(Global.savedValues['username']);
     bool isAvailable = await biometricHelper.isBiometricAvailable();
     if (isAvailable) {
       bool isAuthenticated = await biometricHelper.authenticateUser();
       if (isAuthenticated && userExists) {
-        Map<String, dynamic> user = await dbHelper.loginName(Global.username);
-        DatabaseHelper().setUser(user['id'].toString());
+        Map<String, dynamic> user =
+            await dbHelper.loginName(Global.savedValues['username']);
+        DatabaseHelper().setUser('auth${user['id']}');
         // Proceed with login or access to secured parts of the app
         toastification.show(
           context: context,
@@ -110,6 +114,54 @@ class _LoginPassword extends State<LoginPassword> {
     }
   }
 
+  Future<bool> checkBiometric() async {
+    bool isAvailable = await biometricHelper.isBiometricAvailable();
+    if (isAvailable) {
+      bool isAuthenticated = await biometricHelper.authenticateUser();
+      if (isAuthenticated) {
+        // Proceed with login or access to secured parts of the app
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          style: ToastificationStyle.flat,
+          alignment: Alignment.bottomCenter,
+          showProgressBar: false,
+          title: const Text('Biometric Login enabled'),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+        Global.savedValues['auth'] = true;
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
+        return true;
+      } else {
+        // Show an error or allow fallback to password-based login
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          alignment: Alignment.bottomCenter,
+          showProgressBar: false,
+          title: const Text('Authentication failed'),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+        Global.savedValues['auth'] = false;
+        return false;
+      }
+    } else {
+      // Fallback if biometrics are not available
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        style: ToastificationStyle.flat,
+        alignment: Alignment.bottomCenter,
+        showProgressBar: false,
+        title: const Text('Biometric authentication not available.'),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+      return false;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -139,7 +191,7 @@ class _LoginPassword extends State<LoginPassword> {
                         CircleAvatar(
                           backgroundColor: const Color(0xFF1A32CC),
                           radius: 30,
-                          child: Text(Global.name[0].capitalize!,
+                          child: Text(Global.savedValues['name'][0],
                               style: const TextStyle(
                                   fontSize: 25, color: Colors.white)),
                         ),
@@ -147,7 +199,7 @@ class _LoginPassword extends State<LoginPassword> {
                           height: 15,
                         ),
                         Text(
-                          Global.name,
+                          Global.savedValues['name'],
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
@@ -155,7 +207,7 @@ class _LoginPassword extends State<LoginPassword> {
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
-                        Text(Global.username),
+                        Text(Global.savedValues['username']),
                       ],
                     ),
                     const SizedBox(height: 40),
@@ -188,8 +240,7 @@ class _LoginPassword extends State<LoginPassword> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your Password';
-                        }
-                        else if (value.contains(' ')) {
+                        } else if (value.contains(' ')) {
                           return 'Spaces are not acceptable';
                         }
                         return null;
@@ -201,14 +252,24 @@ class _LoginPassword extends State<LoginPassword> {
                       child: const Text('Login'),
                     ),
                     const SizedBox(height: 10),
-                    Global.auth
+                    Global.savedValues['auth']
                         ? ElevatedButton(
                             onPressed: checkBiometricAndAuthenticate,
                             child: const Text('Biometric Login'),
                           )
                         : Text(''),
+                    Global.savedValues['auth']
+                        ? TextButton(
+                            onPressed: () {
+                              checkBiometric();
+                            },
+                            child: Text('Forgot Password?',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey)),
+                          )
+                        : Text(''),
                     SizedBox(
-                      height: 50,
+                      height: 40,
                     )
                   ],
                 ),

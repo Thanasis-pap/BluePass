@@ -22,7 +22,7 @@ class _Generator extends State<Generator> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text('Password Generator'),
+        title: Text('Password Generator',style: TextStyle(fontSize: 24),),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -168,16 +168,16 @@ class _Generator extends State<Generator> {
                     ),
                   ),
                   showGenerator: true,
+                  generateButtonSize: Size(200,45),
                   generateButtonStyle: ElevatedButton.styleFrom(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                   passwordStrengthCheckerConfiguration:
                   PasswordStrengthCheckerConfiguration(
-                    inactiveBorderColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                    inactiveBorderColor: Colors.transparent,
                   ),
                   onPasswordGenerated: (password, notifier) {
                     // Don't forget to update the notifier!

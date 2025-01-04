@@ -33,6 +33,8 @@ class _DeleteDialogState extends State<DeleteDialog> {
   }
 
   Future<void> _onDeletePressed() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasOpened', false);
     toastification.show(
       context: context,
       style: ToastificationStyle.flat,
@@ -41,11 +43,11 @@ class _DeleteDialogState extends State<DeleteDialog> {
       title: const Text('User deleted successfully.'),
       autoCloseDuration: const Duration(seconds: 2),
     );
-    Map<String,dynamic> user = await dbHelper.loginName(Global.username);
+    Map<String,dynamic> user = await dbHelper.loginName(Global.savedValues['username']);
     dbDataHelper.deleteDatabaseFile(user['id'].toString());
     dbHelper.deleteUser(id: user['id']);
     Navigator.of(context).pushAndRemoveUntil(
-        LeftPageRoute(page: const LoginPage()),
+        LeftPageRoute(page: const OnBoardingPage()),
             (Route<dynamic> route) => false);
   }
 
@@ -73,7 +75,6 @@ class _DeleteDialogState extends State<DeleteDialog> {
                 borderSide: BorderSide.none,
               ),
             ),
-            //onSaved: (value) => _name = value!,
           ),
         ],
       ),

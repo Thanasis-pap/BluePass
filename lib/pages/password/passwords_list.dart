@@ -67,8 +67,7 @@ class _PasswordsList extends State<PasswordsList> {
           toolbarHeight: 100,
           backgroundColor: Theme.of(context).colorScheme.surface,
           scrolledUnderElevation: 0,
-          title: Text('Passwords',
-              style: TextStyle(fontSize: (28))),
+          title: Text('Passwords', style: TextStyle(fontSize: (28))),
           actions: selectedPasswords.isNotEmpty
               ? [
                   Padding(
@@ -91,8 +90,7 @@ class _PasswordsList extends State<PasswordsList> {
                                     Navigator.pop(context, 'Cancel');
                                   },
                                   child: Text('Cancel',
-                                      style:
-                                          TextStyle(fontSize: 18)),
+                                      style: TextStyle(fontSize: 18)),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -110,8 +108,7 @@ class _PasswordsList extends State<PasswordsList> {
                                     Navigator.pop(context, 'Yes');
                                   },
                                   child: Text('Yes',
-                                      style:
-                                          TextStyle(fontSize: 18)),
+                                      style: TextStyle(fontSize: 18)),
                                 ),
                               ],
                             ),
@@ -121,6 +118,18 @@ class _PasswordsList extends State<PasswordsList> {
                 ]
               : [], // Show delete button if any card is selected
         ),
+        floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const EditPassword(
+                          title: "New Password", data: null))).then((value) {Navigator.pop(context);});
+            },
+            icon: Icon(Icons.lock_outline_rounded),
+            backgroundColor: Color(0xFF3F7BD7),
+            foregroundColor: Colors.white,
+            label: Text('Add Password')),
         body: widget.passData.isNotEmpty
             ? ListView(
                 children: widget.passData.map((password) {
@@ -200,14 +209,22 @@ class _PasswordsList extends State<PasswordsList> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.key_off_rounded,size: 50,color: Colors.grey,),
-                    SizedBox(height: 10,),
+                    Icon(
+                      Icons.key_off_rounded,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Text(
-                      'Nothing here yet.',
-                      style: TextStyle(fontSize: 18,color: Colors.grey),
+                      'Nothing here yet',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
                       maxLines: 2,
                     ),
-                    SizedBox(height: 100,)
+                    SizedBox(
+                      height: 100,
+                    )
                   ],
                 ),
               ),

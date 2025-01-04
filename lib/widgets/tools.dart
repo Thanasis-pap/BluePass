@@ -23,7 +23,7 @@ class Tools {
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF160679),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25), // <-- Radius
+              borderRadius: BorderRadius.circular(20), // <-- Radius
             ),
           ),
           child: const Column(
@@ -64,7 +64,7 @@ class Tools {
           style: ElevatedButton.styleFrom(
             backgroundColor: Color(0xFF3F7BD7),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25), // <-- Radius
+              borderRadius: BorderRadius.circular(20), // <-- Radius
             ),
           ),
           child: const Column(
@@ -105,7 +105,7 @@ class Tools {
           style: ElevatedButton.styleFrom(
             backgroundColor: Color(0xFF3F7BD7),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25), // <-- Radius
+              borderRadius: BorderRadius.circular(20), // <-- Radius
             ),
           ),
           child: const Column(
@@ -146,7 +146,7 @@ class Tools {
           style: ElevatedButton.styleFrom(
             backgroundColor: Color(0xFF160679),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25), // <-- Radius
+              borderRadius: BorderRadius.circular(20), // <-- Radius
             ),
           ),
           child: const Column(

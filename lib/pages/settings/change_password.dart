@@ -25,7 +25,7 @@ class _ChangePassword extends State<ChangePassword> {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      final user = await dbHelper.loginUser(Global.username, oldPassword);
+      final user = await dbHelper.loginUser(Global.savedValues['username'], oldPassword);
       print(user);
       if (user != null) {
         showDialog<String>(
@@ -72,7 +72,7 @@ class _ChangePassword extends State<ChangePassword> {
           style: ToastificationStyle.flat,
           alignment: Alignment.bottomCenter,
           showProgressBar: false,
-          title: const Text('Invalid Password'),
+          title: const Text('Current Password is incorrect'),
           autoCloseDuration: const Duration(seconds: 3),
         );
       }
@@ -103,7 +103,7 @@ class _ChangePassword extends State<ChangePassword> {
                     obscureText: oldPasswordVisible,
                     controller: oldPasswordController,
                     decoration: InputDecoration(
-                      label: const Text('Old Password'),
+                      label: const Text('Current Password'),
                       filled: true,
                       prefixIcon: const Icon(Icons.lock_rounded),
                       suffixIcon: IconButton(

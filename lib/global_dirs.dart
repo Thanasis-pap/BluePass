@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'global_dirs.dart';
 export 'package:flutter/services.dart';
 export 'package:after_layout/after_layout.dart';
@@ -23,8 +22,9 @@ export 'package:provider/provider.dart';
 export 'package:path_provider/path_provider.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:introduction_screen/introduction_screen.dart';
-//export 'package:open_file/open_file.dart';
 export 'package:file_picker/file_picker.dart';
+export 'package:gif/gif.dart';
+export 'package:device_info_plus/device_info_plus.dart';
 
 export 'package:passwordmanager/helpers/password_check.dart';
 export 'package:passwordmanager/helpers/biometric_helper.dart';
@@ -48,7 +48,7 @@ export 'package:passwordmanager/pages/settings/app.dart';
 export 'package:passwordmanager/widgets/settings.dart';
 export 'package:passwordmanager/widgets/tools.dart';
 export 'package:passwordmanager/pages/authenticate/login_password.dart';
-export 'package:passwordmanager/pages/temporary.dart';
+export 'package:passwordmanager/pages/settings/about.dart';
 export 'package:passwordmanager/helpers/fade_helper.dart';
 export 'package:passwordmanager/pages/tools/generator.dart';
 export 'package:passwordmanager/pages/tools/checker.dart';
@@ -61,23 +61,26 @@ export 'package:passwordmanager/pages/tools/import.dart';
 export 'package:passwordmanager/helpers/delete_dialog.dart';
 export 'package:passwordmanager/helpers/export_dialog.dart';
 export 'package:passwordmanager/helpers/import_dialog.dart';
-
-
-
-
-
+export 'package:passwordmanager/pages/settings/terms.dart';
+export 'package:passwordmanager/pages/settings/security_questions.dart';
+export 'package:passwordmanager/pages/authenticate/reset_password.dart';
 class Global {
+  static String initialRoute = "/login";
+  static Queue<int> recent = Queue<int>();
   static List<Map<String, dynamic>?> recentItems = [];
   static List<Map<String, dynamic>?> favorItems = [];
-  static String username = '';
-  static bool auth = false;
-  static bool storage = false;
-  static String initialRoute = "/login";
-  static String themeMode = 'System';
-  static Queue<int> recent = Queue<int>();
   static List<int> recentCards = [];
   static List<int> recentPasswords = [];
-  static String name = 'Congratulations!!! You found the Easter Egg!!!';
+  static Map<String, dynamic> savedValues = {
+    'username':'',
+    'name':'Hello',
+    'auth': false,
+    'rememberUsername': false,
+    'authUsername': '',
+    'storage': false,
+    'themeMode':'System',
+    'recovery':false,
+  };
   static Map<String, dynamic> password = {
     'name': '',
     'webpage': '',

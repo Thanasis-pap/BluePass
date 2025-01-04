@@ -16,19 +16,23 @@ class _Export extends State<Export> {
   void getBool() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      Global.storage = prefs.getBool('access') ?? false;
+      Global.savedValues['storage'] = prefs.getBool('access') ?? false;
     });
   }
 
   void setBool() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      prefs.setBool('access', Global.storage);
+      prefs.setBool('access', Global.savedValues['storage']);
     });
   }
 
   Future<bool> requestStoragePermission() async {
-    PermissionStatus status = await Permission.storage.request();
+    final plugin = DeviceInfoPlugin();
+    final android = await plugin.androidInfo;
+    final status = android.version.sdkInt < 33
+        ? await Permission.storage.request()
+        : await Permission.manageExternalStorage.request();
 
     if (status.isGranted) {
       toastification.show(
@@ -85,14 +89,15 @@ class _Export extends State<Export> {
   @override
   void initState() {
     super.initState();
-    currentPage = Global.storage ? 1 : 0;
+    getBool();
+    currentPage = Global.savedValues['storage'] ? 1 : 0;
     _pageViewController = PageController(initialPage: currentPage);
   }
 
   @override
   void dispose() {
     super.dispose();
-    currentPage = Global.storage ? 1 : 0;
+    currentPage = Global.savedValues['storage'] ? 1 : 0;
     _pageViewController.dispose();
     //_tabController.dispose();
   }
@@ -169,7 +174,8 @@ class _Export extends State<Export> {
                           alignment: Alignment.center,
                           child: ElevatedButton(
                             onPressed: () async {
-                              Global.storage = await requestStoragePermission();
+                              Global.savedValues['storage'] = await requestStoragePermission();
+                              setBool();
                             },
                             child: Text(
                               'Request Storage Access',

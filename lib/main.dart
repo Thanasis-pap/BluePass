@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
 
   // Convert a string to a ThemeMode
   ThemeMode _themeFromString(String themeString) {
-    Global.themeMode = themeString;
+    Global.savedValues['themeMode'] = themeString;
     switch (themeString) {
       case 'Light':
         return ThemeMode.light;
@@ -57,8 +57,6 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _isFirstTime = true;
       });
-      // Mark the app as opened for next time
-      await prefs.setBool('hasOpened', true);
     } else {
       // App has already been opened before
       setState(() {
@@ -83,7 +81,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeMode,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue.shade400,
+          seedColor: Colors.blue.shade300,
         ),
         textTheme: GoogleFonts.robotoFlexTextTheme(Theme.of(context).textTheme),
         useMaterial3: true,

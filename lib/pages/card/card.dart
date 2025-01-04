@@ -41,16 +41,9 @@ class _CardPage extends State<CardPage> {
           actions: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(size: 30, Icons.edit_rounded),
-                    color: const Color(0xFF3F7BD7),
-                    onPressed: () {
-                      navigateToEditCard(Global.card);
-                    },
-                  ),
                   IconButton(
                     icon: Icon(
                         size: 30,
@@ -73,6 +66,60 @@ class _CardPage extends State<CardPage> {
                         );
                         dbHelper.editCard(Global.card['id'], Global.card);
                       }); // Handle delete action
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(size: 30, Icons.edit_rounded),
+                    color: const Color(0xFF3F7BD7),
+                    onPressed: () {
+                      navigateToEditCard(Global.card);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    color: const Color(0xFF3F7BD7),
+                    onPressed: () {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Warning',
+                              style: TextStyle(fontSize: 28)),
+                          content: const Text(
+                              'Are you sure you want to delete this card?',
+                              style: TextStyle(fontSize: 18)),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Cancel');
+                              },
+                              child: Text('Cancel',
+                                  style: TextStyle(fontSize: 18)),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await dbHelper.deleteCard(Global.card['id']);
+                                toastification.show(
+                                  context: context,
+                                  style: ToastificationStyle.flat,
+                                  alignment: Alignment.bottomCenter,
+                                  showProgressBar: false,
+                                  title: const Text(
+                                      'Card has been deleted'),
+                                  autoCloseDuration: const Duration(seconds: 2),
+                                );
+                                Navigator.pop(context);
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => MyHomePage(),
+                                    ),
+                                        (Route<dynamic> route) => false);
+                              },
+                              child:
+                              Text('Yes', style: TextStyle(fontSize: 18)),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],

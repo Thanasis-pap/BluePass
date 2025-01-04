@@ -1,4 +1,5 @@
 import 'package:passwordmanager/global_dirs.dart';
+import 'package:passwordmanager/pages/settings/security_questions.dart';
 
 class GeneralSettings extends StatefulWidget {
   const GeneralSettings({
@@ -43,7 +44,7 @@ class _GeneralSettings extends State<GeneralSettings> {
           title: const Text('Biometric Login enabled'),
           autoCloseDuration: const Duration(seconds: 3),
         );
-        Global.auth = true;
+        Global.savedValues['auth'] = true;
         setBool();
         return true;
       } else {
@@ -57,7 +58,7 @@ class _GeneralSettings extends State<GeneralSettings> {
           title: const Text('Authentication failed'),
           autoCloseDuration: const Duration(seconds: 3),
         );
-        Global.auth = false;
+        Global.savedValues['auth'] = false;
         setBool();
         return false;
       }
@@ -77,19 +78,20 @@ class _GeneralSettings extends State<GeneralSettings> {
   }
 
   void getBool() async {
-    Map<String,dynamic> user = await dbHelper.loginName(Global.username);
+    Map<String, dynamic> user =
+        await dbHelper.loginName(Global.savedValues['username']);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      Global.auth = prefs.getBool(user['id'].toString()) ?? false;
-    });
+      Global.savedValues['auth'] = prefs.getBool('auth${user['id']}') ?? false;
   }
-  
+
   void setBool() async {
-    Map<String,dynamic> user = await dbHelper.loginName(Global.username);
+    Map<String, dynamic> user =
+        await dbHelper.loginName(Global.savedValues['username']);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setBool(user['id'].toString(), Global.auth);
-    });
+
+      prefs.setBool('auth${user['id']}', Global.savedValues['auth']);
+      prefs.setBool('rememberUsername', Global.savedValues['rememberUsername']);
+
   }
 
   @override
@@ -163,16 +165,72 @@ class _GeneralSettings extends State<GeneralSettings> {
                     fit: BoxFit.fill,
                     child: Switch(
                       // This bool value toggles the switch.
-                      value: Global.auth,
+                      value: Global.savedValues['auth'],
                       onChanged: (bool value) async {
                         if (value == true) {
                           value = await checkBiometric();
                         }
-                        Global.auth = value;
+                        Global.savedValues['auth'] = value;
                         // This is called when the user toggles the switch.
-                        setState(() {
-                          setBool();
-                        });
+                        setBool();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+          // Padding of 10 between buttons
+          child: SizedBox(
+            height: 70,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(20.0), // Border radius of 35
+                ),
+              ),
+              child: ListTile(
+                title: Text(
+                  'Remember Username',
+                  style: TextStyle(
+                    fontSize: 18,
+                    //color: Colors.white, // Text color
+                  ),
+                ),
+                subtitle: Text(
+                  'This option is application-wide',
+                  style: TextStyle(
+                    fontSize: 11,
+                    //color: Colors.white, // Text color
+                  ),
+                ),
+                leading: Icon(
+                  Icons.verified_user_rounded,
+                  color: Color(0xFF1A32CC),
+                ),
+                trailing: SizedBox(
+                  height: 38,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Switch(
+                      // This bool value toggles the switch.
+                      value: Global.savedValues['rememberUsername'],
+                      onChanged: (bool value) async {
+                        if (value == true) {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setString(
+                              'username', Global.savedValues['username']);
+                        }
+                        Global.savedValues['rememberUsername'] = value;
+                        // This is called when the user toggles the switch.
+                        setBool();
                       },
                     ),
                   ),
@@ -251,6 +309,45 @@ class _GeneralSettings extends State<GeneralSettings> {
                 ),
                 title: Text(
                   'Change Password',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+          // Padding of 10 between buttons
+          child: SizedBox(
+            height: 70,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SecurityQuestions(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(20.0), // Border radius of 35
+                ),
+              ),
+              child: const ListTile(
+                leading: Icon(
+                  Icons.question_mark_rounded,
+                  color: Color(0xFF1A32CC),
+                ),
+                trailing: Icon(
+                  Icons.navigate_next,
+                ),
+                title: Text(
+                  'Security Questions',
                   style: TextStyle(
                     fontSize: 18,
                   ),

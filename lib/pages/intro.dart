@@ -13,8 +13,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
 
   void _onIntroEnd(context) {
     Navigator.of(context).pushReplacement(
-      LeftPageRoute(
-          page: LoginPage()),
+      LeftPageRoute(page: RegisterPage()),
     );
   }
 
@@ -57,8 +56,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
-          image: Image.asset(
-            'assets/password.png',
+          image: Gif(
+            fps: 60,
+            useCache: true,
+            autostart: Autostart.once,
+            image: AssetImage('assets/flow.gif'),
             width: 80,
           ),
           decoration: pageDecoration,
@@ -66,7 +68,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         PageViewModel(
           title: "Your data is safe",
           bodyWidget: Text(
-            "BluePass uses one of the strongest encryption algorithms, as well as biometric authentication.",
+            "BluePass uses AES Encryption, the strongest encryption against brute-force attacks ever created, as well as biometric authentication.",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
@@ -79,7 +81,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         PageViewModel(
           title: "Offline use",
           bodyWidget: Text(
-            "BluePass does not require any internet access. All of your data are encrypted and stored locally.",
+            "BluePass does not require any internet access. All of your data are encrypted and stored locally, no data are stored on servers.",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),

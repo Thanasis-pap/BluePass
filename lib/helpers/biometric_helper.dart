@@ -4,6 +4,7 @@ import 'package:passwordmanager/global_dirs.dart';
 class BiometricHelper {
   final LocalAuthentication auth = LocalAuthentication();
 
+
   // Check if biometric authentication is available
   Future<bool> isBiometricAvailable() async {
     try {

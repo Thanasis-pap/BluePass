@@ -17,9 +17,9 @@ class _EditName extends State<EditName> {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      final user = await dbHelper.loginName(Global.username);
+      final user = await dbHelper.loginName(Global.savedValues['username']);
       print(user);
-      Global.name = name;
+      Global.savedValues['name'] = name;
       int result =
           await dbHelper.editUser(user['id'], name, null, null);
       toastification.show(
@@ -38,7 +38,7 @@ class _EditName extends State<EditName> {
   @override
   void initState() {
     super.initState();
-    nameController.text = Global.name;
+    nameController.text = Global.savedValues['name'];
   }
 
   @override

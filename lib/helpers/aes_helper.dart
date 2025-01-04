@@ -21,9 +21,7 @@ class AESHelper {
 
   Future<String> decryptText(String encryptedText,[String? keyBase64]) async {
 
-    if (keyBase64 == null) {
-      keyBase64 = await _key;
-    }
+    keyBase64 ??= await _key;
     String ivText = encryptedText.split(' ')[0];
     String text = encryptedText.split(' ')[1];
     final key = encrypt.Key.fromBase64(keyBase64!);
