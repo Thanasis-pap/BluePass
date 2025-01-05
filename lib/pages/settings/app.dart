@@ -35,7 +35,13 @@ class _AccountSettings extends State<AccountSettings> {
         toolbarHeight: 100,
         backgroundColor: Theme.of(context).colorScheme.surface,
         scrolledUnderElevation: 0,
-        title: const Text('App Settings', style: TextStyle(fontSize: (28))),
+        title:  Text('App Settings',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),),
         // Show delete button if any card is selected
       ),
       body: ListView(children: [

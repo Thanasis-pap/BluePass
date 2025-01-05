@@ -46,11 +46,17 @@ class _PasswordPage extends State<PasswordPage> {
     return Scaffold(
       appBar: AppBar(
           scrolledUnderElevation: 0,
-          toolbarHeight: 75,
+          toolbarHeight: 100,
           backgroundColor: Theme.of(context).colorScheme.surface,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(Global.password['name'],overflow: TextOverflow.fade),
+          title: Text(Global.password['name'],overflow: TextOverflow.fade,
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),),
           actions: [
             Padding(
               padding:
@@ -145,7 +151,7 @@ class _PasswordPage extends State<PasswordPage> {
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

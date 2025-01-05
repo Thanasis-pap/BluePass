@@ -47,10 +47,12 @@ class _SecurityQuestions extends State<SecurityQuestions> {
     if (_formKey.currentState!.validate()) {
       // Save selected security questions and answers
       List<Map<String, dynamic>> questions = [];
+      Global.savedValues['questions'] = true;
+      setBool();
       for (int i = 0; i < selectedQuestions.length; i++) {
         if (selectedQuestions[i] != null) {
           questions.add({
-            'question': selectedQuestions[i], // Example ID, adjust as necessary
+            'question': selectedQuestions[i],
             'answer': _answerControllers[i].text.trim()
           });
         }
@@ -71,6 +73,13 @@ class _SecurityQuestions extends State<SecurityQuestions> {
     }
   }
 
+  void setBool() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('questions', Global.savedValues['questions']);
+    setState(() {
+    });
+  }
+
   Future<void> loadSecurityQuestions() async {
     List<Map<String, dynamic>> securityQuestions =
         await UserDatabaseHelper().getSecurityQuestions();
@@ -79,7 +88,6 @@ class _SecurityQuestions extends State<SecurityQuestions> {
       // Assuming you have 3 questions saved
       for (int i = 0; i < 3; i++) {
         setState(() {
-          print(i);
           selectedQuestions[i] =
               securityQuestions[i]['question']; // Retrieve the question text
           _answerControllers[i].text = securityQuestions[i]['answer'];
@@ -97,22 +105,25 @@ class _SecurityQuestions extends State<SecurityQuestions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(toolbarHeight: 100,
+      appBar: AppBar(
+        toolbarHeight: 100,
         backgroundColor: Theme.of(context).colorScheme.surface,
         scrolledUnderElevation: 0,
-        title: const Text('Security Questions', style: TextStyle(fontSize: (28))),
-        // Show delete button if any card is selected
+        title: Text(
+          'Security Questions',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0,vertical: 15.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
           child: Form(
             key: _formKey,
             child: Column(
               //crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Select and answer 3 security questions:',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
                 for (int i = 0; i < 3; i++) ...[
                   Card(
                     child: Column(
@@ -145,21 +156,27 @@ class _SecurityQuestions extends State<SecurityQuestions> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        TextFormField(
-                          controller: _answerControllers[i],
-                          decoration: InputDecoration(
-                            labelText: 'Answer ${i + 1}',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
+                        Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          child: TextFormField(
+                            controller: _answerControllers[i],
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                              filled: true,
+                              labelText: 'Answer ${i + 1}',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please provide an answer';
+                              }
+                              return null;
+                            },
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please provide an answer';
-                            }
-                            return null;
-                          },
                         ),
                       ],
                     ),

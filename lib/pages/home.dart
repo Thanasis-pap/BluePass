@@ -17,6 +17,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final _key = GlobalKey<ExpandableFabState>();
   final recentHelper = Recent();
   final dbHelper = DatabaseHelper();
+  final Logout logOut = new Logout();
+  int currentPageIndex = 0;
   SampleItem? selectedItem;
   List<Map<String, dynamic>?> recentItems = [];
   List<Map<String, dynamic>?> favorItems = [];
@@ -39,9 +41,21 @@ class _MyHomePageState extends State<MyHomePage> {
         .cast<Map<String, dynamic>>()
         .toList();
 
+    // Add a 'type' field to each card
+    cards = cards.map((card) {
+      card['type'] = 'card';
+      return card;
+    }).toList();
+
+    // Add a 'type' field to each password
+    passwords = passwords.map((password) {
+      password['type'] = 'password';
+      return password;
+    }).toList();
+
     setState(() {
-      searchItems = [...cards, ...passwords]; // Combine cards and passwords
-      //filteredItems = searchItems; // Initially show all items
+      searchItems = [...passwords, ...cards]; // Combine cards and passwords
+      // filteredItems = searchItems; // Uncomment if filtered items are needed
     });
   }
 
@@ -104,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     favoriteItems.addAll(favoritePasswords);
 
     List<Map<String, dynamic>> favoriteCards =
-    await dbHelper.getFavoriteCards();
+        await dbHelper.getFavoriteCards();
     // Add the 'type' field to each card item
     favoriteCards = favoriteCards.map((card) {
       card['type'] = 'card';
@@ -117,6 +131,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void refreshValues() {
+    setState(() {
+      fetchAllItems();
+      fetchFavoriteItems();
+      fetchRecentItems();
+    });
+  }
 
   void toggleOptions() {
     setState(() {
@@ -136,8 +157,6 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchFavoriteItems();
     fetchAllItems();
   }
-
-  int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Text(
                   "BluePass",
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.bold,
                       ),
                 ),
               ],
@@ -209,57 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   },
                 ),
-                PopupMenuItem<SampleItem>(
-                  value: SampleItem.logOut,
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.logout_rounded,
-                      size: 24,
-                      color: Colors.red,
-                    ),
-                    title: Text(
-                      'Log Out',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  onTap: () {
-                    showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Warning',
-                            style: TextStyle(fontSize: 25)),
-                        content: const Text('Are you sure you want to log out?',
-                            style: TextStyle(fontSize: 16)),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context, 'Cancel');
-                            },
-                            child:
-                                Text('Cancel', style: TextStyle(fontSize: 18)),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              toastification.show(
-                                context: context,
-                                style: ToastificationStyle.flat,
-                                alignment: Alignment.bottomCenter,
-                                showProgressBar: false,
-                                title: const Text('Logged out successfully.'),
-                                autoCloseDuration: const Duration(seconds: 2),
-                              );
-                              Navigator.pop(context, 'Yes');
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  LeftPageRoute(page: const LoginPage()),
-                                  (Route<dynamic> route) => false);
-                            },
-                            child: Text('Yes', style: TextStyle(fontSize: 18)),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                logOut.button(context),
               ],
             ),
           ],
@@ -300,11 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(
                           builder: (_) => const EditCard(
                               title: "New Card", data: null))).then((context) {
-                    setState(() {
-                      fetchAllItems();
-                      fetchFavoriteItems();
-                      fetchRecentItems();
-                    });
+                    refreshValues();
                   });
                   final state = _key.currentState;
                   if (state != null) {
@@ -330,11 +295,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (_) => const EditPassword(
                               title: "New Password",
                               data: null))).then((context) {
-                    setState(() {
-                      fetchAllItems();
-                      fetchFavoriteItems();
-                      fetchRecentItems();
-                    });
+                    refreshValues();
                   });
                   final state = _key.currentState;
                   if (state != null) {
@@ -359,7 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
         destinations: const <Widget>[
           NavigationDestination(
             selectedIcon: Icon(Icons.home_rounded, size: 32),
-            icon: Icon(Icons.home_rounded, size: 32),
+            icon: Icon(Icons.home_outlined, size: 32),
             label: 'Home',
           ),
           NavigationDestination(
@@ -370,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> {
           NavigationDestination(
             selectedIcon: Icon(Icons.password_rounded, size: 32),
             icon: Icon(Icons.password_rounded, size: 32),
-            label: 'Categories',
+            label: 'Tools',
           ),
         ],
       ),
@@ -383,30 +344,41 @@ class _MyHomePageState extends State<MyHomePage> {
               favorItems.isNotEmpty
                   ? Padding(
                       padding: EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        'Favorites',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Your ",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  color: Colors.grey,
+                                ),
+                          ),
+                          Text(
+                            "Favorites",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(),
+                          ),
+                        ],
                       ),
                     )
                   : SizedBox(),
               favorItems.isNotEmpty
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 20),
+                      padding: EdgeInsets.only(bottom: 20,left: 5),
                       child: SizedBox(
                         height:
-                            140, // Define the height for the horizontal list
+                            120, // Define the height for the horizontal list
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: favorItems.length,
                             itemBuilder: (context, index) {
                               final item = favorItems[index];
                               return SizedBox(
-                                width: 180,
+                                width: 150,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 5),
@@ -445,14 +417,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      elevation: 0,
+                                      elevation: 1,
                                       padding: EdgeInsets.zero,
                                       backgroundColor:
                                           Color(int.parse(item?['color']))
-                                              .withOpacity(0.7),
+                                              .withOpacity(0.6),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
-                                            25), // <-- Radius
+                                            20), // <-- Radius
                                       ),
                                     ),
                                     child: Stack(
@@ -463,13 +435,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                         Align(
                                           alignment: Alignment.centerLeft,
                                           child: Opacity(
-                                            opacity: 1,
+                                            opacity: 0.9,
                                             // Set the fade effect (0.0 is fully transparent, 1.0 is fully opaque)
                                             child: Icon(
                                                 item?['type'] == 'password'
                                                     ? Icons.lock_outline_rounded
                                                     : Icons.credit_card_rounded,
-                                                size: 100,
+                                                size: 80,
                                                 // Scale the icon larger than the button
                                                 color: Color(
                                                     int.parse(item?['color']))),
@@ -496,7 +468,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         Align(
                                           alignment: Alignment.topRight,
                                           child: PopupMenuButton<SampleItem>(
-                                            icon: Icon(Icons.more_vert_rounded,
+                                            icon: Icon(
+                                              Icons.more_vert_rounded,
                                               color: Colors.white,
                                             ),
                                             shape: RoundedRectangleBorder(
@@ -568,151 +541,292 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     )
                   : SizedBox(),
-              Text(
-                'Tools',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                child: Text(
+                  'Categories',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(),
+                ),
               ),
-              const SizedBox(height: 10),
-              Tools.tools(context),
               const SizedBox(height: 20),
-              Text(
-                'Recent',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                // height: 500, // Define the height for the horizontal list
-                child: recentItems.isEmpty
-                    ? const SizedBox(
-                        height: 140,
-                        // Define the height for the horizontal list
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.history_rounded,
-                                  size: 50, color: Colors.grey),
-                              Text(
-                                'No recent items',
-                                style:
-                                    TextStyle(fontSize: 20, color: Colors.grey),
-                              ),
-                            ],
-                          ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    height: 120,
+                    width: 160,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<Map<String, dynamic>> passwords =
+                            await dbHelper.getPasswords();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => PasswordsList(
+                                      passData: passwords,
+                                    ))).then((value) {
+                          fetchFavoriteItems();
+                          fetchRecentItems();
+                          fetchAllItems();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF3F7BD7),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20), // <-- Radius
                         ),
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        //scrollDirection: Axis.horizontal,
-                        itemCount: recentItems.length,
-                        itemBuilder: (context, index) {
-                          final item = recentItems[index];
-                          return SizedBox(
-                            //width: 200,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 5),
-                              child: SizedBox(
-                                height: 65,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    fetchFavoriteItems();
-                                    fetchRecentItems();
-                                    fetchAllItems();
-                                    if (item != null) {
-                                      if (item['type'] == 'password') {
-                                        Recent.openPassword(item['id']);
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) => PasswordPage(
-                                                    password: item))).then(
-                                            (context) {
-                                          setState(() {
-                                            fetchAllItems();
-                                            fetchFavoriteItems();
-                                            fetchRecentItems();
-                                          });
-                                        });
-                                      } else {
-                                        Recent.openCard(item['id']);
-                                        Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        CardPage(card: item)))
-                                            .then((context) {
-                                          setState(() {
-                                            fetchAllItems();
-                                            fetchFavoriteItems();
-                                            fetchRecentItems();
-                                          });
-                                        });
-                                      }
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          20), // <-- Radius
-                                    ),
-                                  ),
-                                  child: ListTile(
-                                    title: Text(
-                                      overflow: TextOverflow.ellipsis,
-                                      item?['name'],
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                    trailing: item?['type'] == 'password'
-                                        ? IconButton(
-                                            icon: const Icon(Icons.copy),
-                                            onPressed: () {
-                                              Clipboard.setData(ClipboardData(
-                                                      text: item?['password']))
-                                                  .then((_) {
-                                                toastification.show(
-                                                  context: context,
-                                                  type: ToastificationType
-                                                      .success,
-                                                  style:
-                                                      ToastificationStyle.flat,
-                                                  alignment:
-                                                      Alignment.bottomCenter,
-                                                  showProgressBar: false,
-                                                  title: const Text(
-                                                      'Copied successfully'),
-                                                  autoCloseDuration:
-                                                      const Duration(
-                                                          milliseconds: 1500),
-                                                );
-                                              });
-                                            },
-                                          )
-                                        : SizedBox(),
-                                    leading: Icon(
-                                      item?['type'] == 'password'
-                                          ? Icons.lock_outline_rounded
-                                          : Icons.credit_card_rounded,
-                                      // Use the password icon
-                                      size:
-                                          40, // Scale the icon larger than the button
-                                      //color: Colors.blue, // Set the color of the icon
-                                    ),
-                                  ),
+                      ),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // Center the content in the button
+                        children: [
+                          // Faded, scaled background icon
+                          Icon(
+                            Icons.lock_outline_rounded,
+                            size: 60,
+                            color: Color(0xFF160679),
+                          ),
+                          // Text on top of the button
+                          Text(
+                            'Password',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white // Text color
                                 ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 120,
+                    width: 160,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<Map<String, dynamic>> cards =
+                            await dbHelper.getCards();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => CardsList(
+                                      cardData: cards,
+                                    ))).then((value) {
+                          fetchRecentItems();
+                          fetchFavoriteItems();
+                          fetchAllItems();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF160679),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20), // <-- Radius
+                        ),
+                      ),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // Center the content in the button
+                        children: [
+                          // Faded, scaled background icon
+                          Icon(
+                            Icons.credit_card_rounded,
+                            size: 60,
+                            color: Color(0xFF3F7BD7),
+                          ),
+                          // Text on top of the button
+                          Text(
+                            'Card',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white // Text color
+                                ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Column(
+                children: [
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Recent',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(),
+                    ),
+                  ),
+                  SizedBox(
+                    // height: 500, // Define the height for the horizontal list
+                    child: recentItems.isEmpty
+                        ? const SizedBox(
+                            height: 140,
+                            // Define the height for the horizontal list
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.history_rounded,
+                                      size: 50, color: Colors.grey),
+                                  Text(
+                                    'No recent items',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.grey),
+                                  ),
+                                ],
                               ),
                             ),
-                          );
-                        }),
+                          )
+                        : Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                //scrollDirection: Axis.horizontal,
+                                itemCount: recentItems.length,
+                                itemBuilder: (context, index) {
+                                  final item = recentItems[index];
+                                  return
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: SizedBox(
+                                        height: 65,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            fetchFavoriteItems();
+                                            fetchRecentItems();
+                                            fetchAllItems();
+                                            if (item != null) {
+                                              if (item['type'] == 'password') {
+                                                Recent.openPassword(item['id']);
+                                                Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                PasswordPage(
+                                                                    password:
+                                                                        item)))
+                                                    .then((context) {
+                                                  setState(() {
+                                                    fetchAllItems();
+                                                    fetchFavoriteItems();
+                                                    fetchRecentItems();
+                                                  });
+                                                });
+                                              } else {
+                                                Recent.openCard(item['id']);
+                                                Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                CardPage(
+                                                                    card:
+                                                                        item)))
+                                                    .then((context) {
+                                                  setState(() {
+                                                    fetchAllItems();
+                                                    fetchFavoriteItems();
+                                                    fetchRecentItems();
+                                                  });
+                                                });
+                                              }
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            elevation: 1,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      20), // <-- Radius
+                                            ),
+                                          ),
+                                          child: ListTile(
+                                            title: Text(
+                                              overflow: TextOverflow.ellipsis,
+                                              item?['name'],
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                            trailing: item?['type'] ==
+                                                    'password'
+                                                ? IconButton(
+                                                    icon:
+                                                        const Icon(Icons.copy),
+                                                    onPressed: () {
+                                                      Clipboard.setData(
+                                                              ClipboardData(
+                                                                  text: item?[
+                                                                      'password']))
+                                                          .then((_) {
+                                                        toastification.show(
+                                                          context: context,
+                                                          type:
+                                                              ToastificationType
+                                                                  .success,
+                                                          style:
+                                                              ToastificationStyle
+                                                                  .flat,
+                                                          alignment: Alignment
+                                                              .bottomCenter,
+                                                          showProgressBar:
+                                                              false,
+                                                          title: const Text(
+                                                              'Copied successfully'),
+                                                          autoCloseDuration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      1500),
+                                                        );
+                                                      });
+                                                    },
+                                                  )
+                                                : SizedBox(),
+                                            leading: CircleAvatar(
+                                              radius: 22,
+                                              backgroundColor: Color(
+                                                      int.parse(item?['color']))
+                                                  .withOpacity(0.5),
+                                              child: Icon(
+                                                color: Color(
+                                                    int.parse(item?['color'])),
+                                                item?['type'] == 'password'
+                                                    ? Icons.lock_outline_rounded
+                                                    : Icons.credit_card_rounded,
+                                                // Use the password icon
+                                                size:
+                                                    32, // Scale the icon larger than the button
+                                                //color: Colors.blue, // Set the color of the icon
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  );
+                                }),
+                          ),
+                  ),
+                  /*Icon(Icons.search_off_rounded,
+                          size: 50, color: Colors.grey),
+                      */
+                ],
               ),
               SizedBox(
                 height: 100,
@@ -730,14 +844,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
                 child: Text(
                   'Search',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(),
                 ),
               ),
               const SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextField(
                   controller: searchController,
                   onChanged: (value) {
@@ -745,7 +857,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   decoration: InputDecoration(
                     label: const Text(
-                      'Search passwords or cards',
+                      'Type to search...',
                       style: TextStyle(fontSize: 18),
                     ),
                     prefixIcon: const Icon(Icons.search_rounded),
@@ -757,27 +869,127 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
               filteredItems.isEmpty
-                  ? Align(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 50.0),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.search_off_rounded,
-                              size: 40,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Nothing here yet.', // Initial message
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ],
+                  ? Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0),
+                  child:Column(
+                      //mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemCount: searchItems.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> item = searchItems[index];
+                            bool isCard = item.containsKey(
+                                'card_number'); // Assuming card has 'card_number'
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 5.0),
+                              child: SizedBox(
+                                height: 65,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 1,
+                                    padding: EdgeInsets.zero,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    // If it's a card, handle card click
+                                    if (isCard) {
+                                      Recent.openCard(item['id']);
+                                      Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      CardPage(card: item)))
+                                          .then((context) {
+                                        setState(() {
+                                          fetchFavoriteItems();
+                                          fetchRecentItems();
+                                          fetchAllItems();
+                                        });
+                                      });
+                                      // Navigate to card details or handle another action
+                                    } else {
+                                      Recent.openPassword(item['id']);
+                                      Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) => PasswordPage(
+                                                      password: item)))
+                                          .then((context) {
+                                        setState(() {
+                                          fetchFavoriteItems();
+                                          fetchRecentItems();
+                                          fetchAllItems();
+                                        });
+                                      });
+                                      // Navigate to password details or handle another action
+                                    }
+                                  },
+                                  child: ListTile(
+                                    title: Text(
+                                      item['name'], // Display name
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    leading: CircleAvatar(
+                                      radius: 22,
+                                      backgroundColor:
+                                          Color(int.parse(item['color']))
+                                              .withOpacity(0.5),
+                                      child: Icon(
+                                        color: Color(int.parse(item['color'])),
+                                        item['type'] == 'password'
+                                            ? Icons.lock_outline_rounded
+                                            : Icons.credit_card_rounded,
+                                        // Use the password icon
+                                        size:
+                                            32, // Scale the icon larger than the button
+                                        //color: Colors.blue, // Set the color of the icon
+                                      ),
+                                    ),
+                                    trailing: !isCard
+                                        ? IconButton(
+                                            icon: const Icon(Icons.copy),
+                                            onPressed: () {
+                                              Clipboard.setData(ClipboardData(
+                                                      text: item['password']))
+                                                  .then((_) {
+                                                toastification.show(
+                                                  type: ToastificationType
+                                                      .success,
+                                                  style:
+                                                      ToastificationStyle.flat,
+                                                  alignment:
+                                                      Alignment.bottomCenter,
+                                                  showProgressBar: false,
+                                                  title: const Text(
+                                                      'Copied successfully'),
+                                                  autoCloseDuration:
+                                                      const Duration(
+                                                          milliseconds: 1500),
+                                                );
+                                              });
+                                            },
+                                          )
+                                        : SizedBox(),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    )
+                      ],
+                    ),)
                   : Animate(
                       effects: [
                         FadeEffect(),
@@ -800,8 +1012,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     height: 65,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
+                                        elevation: 1,
                                         padding: EdgeInsets.zero,
-                                        elevation: 0,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20.0),
@@ -848,174 +1060,87 @@ class _MyHomePageState extends State<MyHomePage> {
                                             fontSize: 18,
                                           ),
                                         ),
-                                        leading: isCard
-                                            ? const Icon(
-                                                Icons.credit_card_rounded,
-                                                size: 40,
+                                        leading: CircleAvatar(
+                                          radius: 22,
+                                          backgroundColor:
+                                              Color(int.parse(item?['color']))
+                                                  .withOpacity(0.5),
+                                          child: Icon(
+                                            color: Color(
+                                                int.parse(item?['color'])),
+                                            item?['type'] == 'password'
+                                                ? Icons.lock_outline_rounded
+                                                : Icons.credit_card_rounded,
+                                            // Use the password icon
+                                            size:
+                                                32, // Scale the icon larger than the button
+                                            //color: Colors.blue, // Set the color of the icon
+                                          ),
+                                        ),
+                                        trailing: !isCard
+                                            ? IconButton(
+                                                icon: const Icon(Icons.copy),
+                                                onPressed: () {
+                                                  Clipboard.setData(
+                                                          ClipboardData(
+                                                              text: item?[
+                                                                  'password']))
+                                                      .then((_) {
+                                                    toastification.show(
+                                                      context: context,
+                                                      type: ToastificationType
+                                                          .success,
+                                                      style: ToastificationStyle
+                                                          .flat,
+                                                      alignment: Alignment
+                                                          .bottomCenter,
+                                                      showProgressBar: false,
+                                                      title: const Text(
+                                                          'Copied successfully'),
+                                                      autoCloseDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  1500),
+                                                    );
+                                                  });
+                                                },
                                               )
-                                            : const Icon(
-                                                Icons.lock_outline_rounded,
-                                                size: 40,
-                                              ),
+                                            : SizedBox(),
                                       ),
                                     ),
                                   ),
                                 );
                               },
                             )
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 50.0),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.search_off_rounded,
-                                    size: 40,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    'Nothing here yet.', // Initial message
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          : SizedBox(),
                     ),
             ]),
         ListView(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
-              child: Text(
-                'Categories',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Text(
+                    "Password ",
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: Colors.grey,
+                        ),
+                  ),
+                  Text(
+                    "Tools",
+                    style:
+                        Theme.of(context).textTheme.headlineMedium?.copyWith(),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
-              child: SizedBox(
-                height: 160,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    List<Map<String, dynamic>> passwords =
-                        await dbHelper.getPasswords();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => PasswordsList(
-                                  passData: passwords,
-                                ))).then((value) {
-                      fetchFavoriteItems();
-                      fetchRecentItems();
-                      fetchAllItems();
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    //backgroundColor: Colors.orange.shade500.withOpacity(0.4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25), // <-- Radius
-                    ),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    // Center the content in the button
-                    children: [
-                      // Faded, scaled background icon
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Image.asset(
-                          'assets/password.png',
-                          height: 100,
-                        ),
-                      ),
-                      // Text on top of the button
-                      const Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 10),
-                          child: Text(
-                            'Passwords',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              //color: Colors.white, // Text color
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              child: Tools.tools(context),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
-              child: SizedBox(
-                height: 160,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    List<Map<String, dynamic>> cards =
-                        await dbHelper.getCards();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => CardsList(
-                                  cardData: cards,
-                                ))).then((value) {
-                      fetchRecentItems();
-                      fetchFavoriteItems();
-                      fetchAllItems();
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    //backgroundColor: Colors.orange.shade500.withOpacity(0.4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25), // <-- Radius
-                    ),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    // Center the content in the button
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Image.asset(
-                          'assets/card.png',
-                          height: 60,
-                        ),
-                      ),
-                      // Faded, scaled background icon
-                      const Opacity(
-                        opacity: 0.1,
-                        // Set the fade effect (0.0 is fully transparent, 1.0 is fully opaque)
-                      ),
-                      // Text on top of the button
-                      const Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 10),
-                          child: Text(
-                            'Credit Cards',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              //color: Colors.white, // Text color
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(height: 20),
           ],
         ),
       ][currentPageIndex],

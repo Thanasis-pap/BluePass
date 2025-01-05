@@ -26,7 +26,6 @@ class _GeneralSettings extends State<GeneralSettings> {
       autoCloseDuration: const Duration(seconds: 2),
     );
     Navigator.pop(context);
-    print('Done');
   }
 
   Future<bool> checkBiometric() async {
@@ -91,7 +90,9 @@ class _GeneralSettings extends State<GeneralSettings> {
 
       prefs.setBool('auth${user['id']}', Global.savedValues['auth']);
       prefs.setBool('rememberUsername', Global.savedValues['rememberUsername']);
-
+      setState(() {
+        
+      });
   }
 
   @override
@@ -121,9 +122,13 @@ class _GeneralSettings extends State<GeneralSettings> {
         toolbarHeight: 100,
         backgroundColor: Theme.of(context).colorScheme.surface,
         scrolledUnderElevation: 0,
-        title: const Text('Security and Privacy',
-            style: TextStyle(fontSize: (28))),
-        // Show delete button if any card is selected
+        title:  Text('Security & Privacy',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),),
       ),
       body: ListView(children: [
         Padding(
@@ -204,7 +209,7 @@ class _GeneralSettings extends State<GeneralSettings> {
                   ),
                 ),
                 subtitle: Text(
-                  'This option is application-wide',
+                  'Auto-insert Username between logins',
                   style: TextStyle(
                     fontSize: 11,
                     //color: Colors.white, // Text color

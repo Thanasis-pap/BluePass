@@ -22,21 +22,31 @@ class _Generator extends State<Generator> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text('Password Generator',style: TextStyle(fontSize: 24),),
+        title:  Text('Password Generator',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Details',
-                  style: TextStyle(fontSize: 20),
-                ),
+                Text(
+              'Details',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(
+
+              ),),
                 SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
@@ -102,10 +112,14 @@ class _Generator extends State<Generator> {
                       )),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Generate:',
-                  style: TextStyle(fontSize: 20),
-                ),
+                Text(
+                  'Generate',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(
+
+                  ),),
                 SizedBox(height: 10),
                 PasswordStrengthFormChecker(
                   minimumStrengthRequired: PasswordStrength.secure,

@@ -25,6 +25,7 @@ export 'package:introduction_screen/introduction_screen.dart';
 export 'package:file_picker/file_picker.dart';
 export 'package:gif/gif.dart';
 export 'package:device_info_plus/device_info_plus.dart';
+export 'package:drop_shadow/drop_shadow.dart';
 
 export 'package:passwordmanager/helpers/password_check.dart';
 export 'package:passwordmanager/helpers/biometric_helper.dart';
@@ -47,6 +48,7 @@ export 'package:passwordmanager/pages/settings/security.dart';
 export 'package:passwordmanager/pages/settings/app.dart';
 export 'package:passwordmanager/widgets/settings.dart';
 export 'package:passwordmanager/widgets/tools.dart';
+export 'package:passwordmanager/widgets/logout_button.dart';
 export 'package:passwordmanager/pages/authenticate/login_password.dart';
 export 'package:passwordmanager/pages/settings/about.dart';
 export 'package:passwordmanager/helpers/fade_helper.dart';
@@ -80,6 +82,7 @@ class Global {
     'storage': false,
     'themeMode':'System',
     'recovery':false,
+    'questions':false,
   };
   static Map<String, dynamic> password = {
     'name': '',

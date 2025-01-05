@@ -56,12 +56,14 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
-          image: Gif(
-            fps: 60,
-            useCache: true,
-            autostart: Autostart.once,
-            image: AssetImage('assets/flow.gif'),
-            width: 80,
+          image: DropShadow(
+            child: Gif(
+              fps: 60,
+              useCache: true,
+              autostart: Autostart.once,
+              image: AssetImage('assets/flow.gif'),
+              width: 80,
+            ),
           ),
           decoration: pageDecoration,
         ),
@@ -72,9 +74,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
-          image: Image.asset(
-            'assets/encryption.png',
-            width: 100,
+          image: DropShadow(
+            child: Image.asset(
+              'assets/encryption.png',
+              width: 100,
+            ),
           ),
           decoration: pageDecoration,
         ),
@@ -85,9 +89,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
-          image: Image.asset(
-            'assets/cloud.png',
-            width: 100,
+          image: DropShadow(
+            child: Image.asset(
+              'assets/cloud.png',
+              width: 100,
+            ),
           ),
           decoration: pageDecoration,
         ),
@@ -98,9 +104,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
-          image: Image.asset(
-            'assets/import_export.png',
-            width: 100,
+          image: DropShadow(
+            child: Image.asset(
+              'assets/import_export.png',
+              width: 100,
+            ),
           ),
           decoration: pageDecoration,
         ),
@@ -111,10 +119,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
-          image: Image.asset(
+          image: DropShadow(
+    child:Image.asset(
             'assets/password.png',
             width: 80,
-          ),
+          ),),
           decoration: pageDecoration,
         ),
       ],

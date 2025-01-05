@@ -187,11 +187,9 @@ class UserDatabaseHelper {
     final result = await db.query('users');
     // Loop through each user and compare the decrypted email
     for (var user in result) {
-      //print(user);
       // Safely check if 'email' exists and is not null
       String decryptedEmail = await _aesHelper
           .decryptText(user['email'] as String); // Cast 'email' to String
-      print(decryptedEmail);
       if (decryptedEmail == username) {
         return user; // Login successful, return the user data
       }
@@ -234,8 +232,6 @@ class UserDatabaseHelper {
             );
       }
     }
-
-    print('All user data re-encrypted successfully');
   }
 
   // Add security questions for a user
@@ -271,6 +267,13 @@ class UserDatabaseHelper {
         )
       };
     }));
+  }
+
+  Future<int> deleteSecurityQuestions() async {
+    final db = await database;
+
+    // Delete all rows from the 'security_questions' table
+    return await db.delete('security_questions');
   }
 
   // Verify security question answers

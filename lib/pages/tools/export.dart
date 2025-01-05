@@ -112,7 +112,13 @@ class _Export extends State<Export> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: const Text('Export Data', style: TextStyle(fontSize: (28))),
+          title: Text('Export',
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),),
         ),
         body: Column(
           children: [
@@ -136,7 +142,7 @@ class _Export extends State<Export> {
                                 .textTheme
                                 .headlineMedium
                                 ?.copyWith(
-                                  fontWeight: FontWeight.bold,
+
                                 ),
                           ),
                         ),
@@ -199,7 +205,7 @@ class _Export extends State<Export> {
                                 .textTheme
                                 .headlineMedium
                                 ?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                              
                                 ),
                           ),
                         ),

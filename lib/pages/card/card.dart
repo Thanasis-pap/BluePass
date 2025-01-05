@@ -37,7 +37,13 @@ class _CardPage extends State<CardPage> {
           toolbarHeight: 100,
           backgroundColor: Theme.of(context).colorScheme.surface,
           scrolledUnderElevation: 0,
-          title: Text(Global.card['name']),
+          title: Text(Global.card['name'],overflow: TextOverflow.fade,
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),),
           actions: [
             Padding(
               padding:
@@ -129,7 +135,7 @@ class _CardPage extends State<CardPage> {
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
             child: SizedBox(
               width: 320.0,
               height: 250,

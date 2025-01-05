@@ -112,23 +112,15 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: () {
                         loginUser(_passwordController.text);
                       },
-                      child: const Text('Next'),
+                      iconAlignment: IconAlignment.end,
+                      icon: Icon(Icons.arrow_forward_rounded,size: 20,),
+                      label: const Text('    Next'),
                     ),
                     const SizedBox(height: 10),
-                    /*TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            LeftPageRoute(
-                                page: const RegisterPage()),
-                                (Route<dynamic> route) => false);
-                      },
-
-                      child: const Text('No account? Register'),
-                    ),*/
                   ],
                 ),
               ),

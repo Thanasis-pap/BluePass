@@ -45,7 +45,21 @@ class _DeleteDialogState extends State<DeleteDialog> {
     );
     Map<String,dynamic> user = await dbHelper.loginName(Global.savedValues['username']);
     dbDataHelper.deleteDatabaseFile(user['id'].toString());
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     dbHelper.deleteUser(id: user['id']);
+    dbHelper.deleteSecurityQuestions();
+    await preferences.clear();
+    Global.savedValues= {
+      'username':'',
+      'name':'I am awesome, but this code would also be awesome after a good refactoring',
+      'auth': false,
+      'rememberUsername': false,
+      'authUsername': '',
+      'storage': false,
+      'themeMode':'System',
+      'recovery':false,
+      'questions':false,
+    };
     Navigator.of(context).pushAndRemoveUntil(
         LeftPageRoute(page: const OnBoardingPage()),
             (Route<dynamic> route) => false);

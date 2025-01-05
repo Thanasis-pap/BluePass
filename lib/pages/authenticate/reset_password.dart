@@ -152,18 +152,36 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (answerController1.text.trim() == correctAnswers[0] &&
           answerController2.text.trim() == correctAnswers[1] &&
           answerController3.text.trim() == correctAnswers[2]) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Answers validated. Proceed to reset password')),
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          style: ToastificationStyle.flat,
+          alignment: Alignment.bottomCenter,
+          showProgressBar: false,
+          title: const Text('Answers validated. Proceed to reset password'),
+          autoCloseDuration: const Duration(seconds: 3),
         );
         goToNextPage();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Incorrect answers. Please try again.')),
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          alignment: Alignment.bottomCenter,
+          showProgressBar: false,
+          title: const Text('Incorrect answers. Please try again.'),
+          autoCloseDuration: const Duration(seconds: 3),
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please answer all questions')),
+      toastification.show(
+        context: context,
+        type: ToastificationType.warning,
+        style: ToastificationStyle.flat,
+        alignment: Alignment.bottomCenter,
+        showProgressBar: false,
+        title: const Text('Please answer all questions'),
+        autoCloseDuration: const Duration(seconds: 3),
       );
     }
   }

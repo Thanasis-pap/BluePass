@@ -10,6 +10,7 @@ class LoginPassword extends StatefulWidget {
 class _LoginPassword extends State<LoginPassword> {
   final formKey = GlobalKey<FormState>();
   bool passwordVisible = true;
+  bool questions = false;
   String password = '';
   final dbHelper = UserDatabaseHelper();
   final BiometricHelper biometricHelper = BiometricHelper();
@@ -20,6 +21,7 @@ class _LoginPassword extends State<LoginPassword> {
         await dbHelper.loginName(Global.savedValues['username']);
     setState(() {
       Global.savedValues['auth'] = prefs.getBool('auth${user['id']}') ?? false;
+      Global.savedValues['questions'] = prefs.getBool('questions') ?? false;
     });
     if (Global.savedValues['auth']) {
       checkBiometricAndAuthenticate();
@@ -130,6 +132,7 @@ class _LoginPassword extends State<LoginPassword> {
           autoCloseDuration: const Duration(seconds: 3),
         );
         Global.savedValues['auth'] = true;
+
         Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
         return true;
@@ -247,18 +250,20 @@ class _LoginPassword extends State<LoginPassword> {
                       },
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: loginUser,
-                      child: const Text('Login'),
+                      icon: Icon(Icons.login_rounded,size: 20),
+                      label: const Text('Login'),
                     ),
                     const SizedBox(height: 10),
                     Global.savedValues['auth']
-                        ? ElevatedButton(
+                        ? ElevatedButton.icon(
                             onPressed: checkBiometricAndAuthenticate,
-                            child: const Text('Biometric Login'),
+                      icon: Icon(Icons.fingerprint_rounded,size: 20),
+                            label: const Text('Biometric Login'),
                           )
                         : Text(''),
-                    Global.savedValues['auth']
+                    Global.savedValues['auth'] && Global.savedValues['questions']
                         ? TextButton(
                             onPressed: () {
                               checkBiometric();

@@ -185,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  drop_shadow:
+    dependency: "direct main"
+    description:
+      name: drop_shadow
+      sha256: "1fa552baeb7c6a3c36a7ff77186a2302a7bf53c93914f46328a9c4eb68ec6b08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   encrypt:
     dependency: "direct main"
     description:
@@ -270,6 +278,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.0"
+  flutter_animated_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_animated_icons
+      sha256: f9d8069c746b3723d7c9a70087913ddff8e44ea636b831bcccfc58082600afe9
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   flutter_colorpicker:
     dependency: "direct main"
     description:
@@ -576,6 +592,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.11"
+  lottie:
+    dependency: transitive
+    description:
+      name: lottie
+      sha256: "893da7a0022ec2fcaa616f34529a081f617e86cc501105b856e5a3184c58c7c2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.3"
   matcher:
     dependency: transitive
     description:

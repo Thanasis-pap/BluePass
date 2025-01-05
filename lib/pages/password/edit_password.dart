@@ -164,11 +164,16 @@ class _EditPassword extends State<EditPassword> {
       },
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 75,
+          toolbarHeight: 100,
           backgroundColor: Theme.of(context).colorScheme.surface,
           scrolledUnderElevation: 0,
-          title: Text(widget.title),
-          centerTitle: true,
+          title: Text(widget.title,
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),),
           actions: [
             Padding(
               padding:

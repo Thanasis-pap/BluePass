@@ -22,7 +22,6 @@ class _ChangeUsername extends State<ChangeUsername> {
       formKey.currentState!.save();
 
       final user = await dbHelper.loginUser(oldUsername, password);
-      print(user);
       if (user != null) {
         showDialog<String>(
           context: context,
@@ -83,8 +82,13 @@ class _ChangeUsername extends State<ChangeUsername> {
         toolbarHeight: 100,
         backgroundColor: Theme.of(context).colorScheme.surface,
         scrolledUnderElevation: 0,
-        title: const Text('Change Username', style: TextStyle(fontSize: (28))),
-        // Show delete button if any card is selected
+        title:  Text('Change Username',
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

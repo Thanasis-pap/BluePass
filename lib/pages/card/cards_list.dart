@@ -66,7 +66,23 @@ class _CardList extends State<CardsList> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           scrolledUnderElevation: 0,
           toolbarHeight: 100,
-          title: Text('Cards', style: TextStyle(fontSize: (28))),
+          title: Row(
+            children: [
+              Text(
+                "Your ",
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+              ),
+              Text(
+                "Cards",
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
           actions: selectedCards.isNotEmpty
               ? [
                   Padding(
@@ -120,10 +136,13 @@ class _CardList extends State<CardsList> {
         floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) =>
-                          const EditCard(title: "New Card", data: null))).then((value) {Navigator.pop(context);});
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              const EditCard(title: "New Card", data: null)))
+                  .then((value) {
+                Navigator.pop(context);
+              });
             },
             icon: Icon(Icons.add_card_rounded),
             backgroundColor: Color(0xFF3F7BD7),
@@ -144,10 +163,7 @@ class _CardList extends State<CardsList> {
                       height: 85,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: isSelected
-                              ? cardColor.withOpacity(0.8)
-                              : cardColor.withOpacity(0.5),
+                          elevation: 1,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                                 20.0), // Border radius of 35
@@ -168,7 +184,7 @@ class _CardList extends State<CardsList> {
                         },
                         child: ListTile(
                           contentPadding:
-                              const EdgeInsets.fromLTRB(10, 0, 20, 0),
+                              const EdgeInsets.fromLTRB(00, 0, 20, 0),
                           title: Text(
                             overflow: TextOverflow.ellipsis,
                             card['name'],
@@ -195,10 +211,29 @@ class _CardList extends State<CardsList> {
                               //color: Colors.white, // Text color
                             ),
                           ),
-                          leading: const Icon(
-                            Icons.credit_card_rounded, // Use the password icon
-                            size: 40, // Scale the icon larger than the button
-                            //color: Colors.blue, // Set the color of the icon
+                          leading: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: isSelected
+                                ? Color(0xFF3F7BD7)
+                                : Color(int.parse(card['color']))
+                                    .withOpacity(0.5),
+                            child: isSelected
+                                ? Icon(
+                                    color: Colors.white,
+                                    Icons.check,
+                                    // Use the password icon
+                                    size:
+                                        30, // Scale the icon larger than the button
+                                    //color: Colors.blue, // Set the color of the icon
+                                  )
+                                : Icon(
+                                    color: Color(int.parse(card['color'])),
+                                    Icons.credit_card_rounded,
+                                    // Use the password icon
+                                    size:
+                                        35, // Scale the icon larger than the button
+                                    //color: Colors.blue, // Set the color of the icon
+                                  ),
                           ),
                         ),
                       ),

@@ -13,7 +13,6 @@ class AESHelper {
     keyBase64 ??= (await _key)!;
     final key = encrypt.Key.fromBase64(keyBase64);
     final iv = encrypt.IV.fromSecureRandom(16);
-    print(key.base64);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final encrypted = encrypter.encrypt(text, iv: iv);
     return '${iv.base64} ${encrypted.base64}';
@@ -28,7 +27,6 @@ class AESHelper {
     final iv = encrypt.IV.fromBase64(ivText);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final decrypted = encrypter.decrypt64(text, iv: iv);
-    print(decrypted);
     return decrypted;
   }
 }

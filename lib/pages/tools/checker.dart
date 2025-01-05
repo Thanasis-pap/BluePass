@@ -23,11 +23,17 @@ class _Checker extends State<Checker> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('Password Strength Check',style: TextStyle(fontSize: 24),),
+        title:  Text('Password Strength Check',
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall
+              ?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -36,8 +42,12 @@ class _Checker extends State<Checker> {
               children: [
                 Text(
                   'Details',
-                  style: TextStyle(fontSize: 20),
-                ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(
+
+                  ),),
                 SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
@@ -100,10 +110,14 @@ class _Checker extends State<Checker> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Enter your password here:',
-                  style: TextStyle(fontSize: 20),
-                ),
+                Text(
+                  'Enter your password',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(
+
+                  ),),
                 SizedBox(height: 10),
                 PasswordStrengthFormChecker(
                   minimumStrengthRequired: PasswordStrength.secure,

@@ -113,7 +113,13 @@ class _Import extends State<Import> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: const Text('Export Data', style: TextStyle(fontSize: (28))),
+          title: Text('Import',
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),),
         ),
         body: Column(
           children: [
@@ -137,7 +143,7 @@ class _Import extends State<Import> {
                                 .textTheme
                                 .headlineMedium
                                 ?.copyWith(
-                                  fontWeight: FontWeight.bold,
+
                                 ),
                           ),
                         ),
@@ -200,7 +206,7 @@ class _Import extends State<Import> {
                                 .textTheme
                                 .headlineMedium
                                 ?.copyWith(
-                                  fontWeight: FontWeight.bold,
+
                                 ),
                           ),
                         ),
@@ -256,7 +262,6 @@ class _Import extends State<Import> {
                               await dbHelper.requestStoragePermission();
                               String? message = await dbHelper
                                   .importDatabaseFromCSV(_textController.text);
-                              print(message);
                               toastification.show(
                                 context: context,
                                 type: message == null

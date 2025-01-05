@@ -53,9 +53,7 @@ class DatabaseHelper {
     File dbFile = File(dbPath);
     if (await dbFile.exists()) {
       await dbFile.delete();
-      print("Database file deleted successfully.");
     } else {
-      print("Database file does not exist.");
     }
   }
 
@@ -408,7 +406,7 @@ class DatabaseHelper {
         }
       }
     } catch (err) {
-      print("Cannot get download folder path");
+      print('Damn');
     }
     return directory?.path;
   }
@@ -426,7 +424,6 @@ class DatabaseHelper {
       // Ensure storage permission is granted
       PermissionStatus permission = await Permission.storage.request();
       if (!permission.isGranted) {
-        print('Storage permission not granted');
         return;
       }
 
@@ -500,7 +497,7 @@ class DatabaseHelper {
       String? downloadsDirectory = await getDownloadPath();
 
       if (downloadsDirectory == null) {
-        print('Failed to get Downloads directory.');
+
         return;
       }
 
@@ -512,9 +509,9 @@ class DatabaseHelper {
       File(passwordsCsvPath).writeAsStringSync(passwordsCsv);
       File(cardsCsvPath).writeAsStringSync(cardsCsv);
 
-      print('Passwords and Cards exported to CSV files.');
+
     } catch (e) {
-      print('Error exporting data to CSV: $e');
+      print('Damn');
     }
   }
 
@@ -583,7 +580,7 @@ class DatabaseHelper {
         return 'No file selected';
       }
     } catch (e) {
-      print(e);
+
       return 'Error importing CSV';
     }
   }

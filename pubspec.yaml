@@ -60,6 +60,8 @@ dependencies:
   csv: ^6.0.0
   gif: ^2.3.0
   device_info_plus: ^11.1.0
+  drop_shadow: ^0.1.0
+  flutter_animated_icons: ^1.0.1
 
 dev_dependencies:
   flutter_test:

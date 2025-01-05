@@ -67,7 +67,23 @@ class _PasswordsList extends State<PasswordsList> {
           toolbarHeight: 100,
           backgroundColor: Theme.of(context).colorScheme.surface,
           scrolledUnderElevation: 0,
-          title: Text('Passwords', style: TextStyle(fontSize: (28))),
+          title: Row(
+            children: [
+              Text(
+                "Your ",
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
+              Text(
+                "Passwords",
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
           actions: selectedPasswords.isNotEmpty
               ? [
                   Padding(
@@ -133,21 +149,16 @@ class _PasswordsList extends State<PasswordsList> {
         body: widget.passData.isNotEmpty
             ? ListView(
                 children: widget.passData.map((password) {
-                  Color cardColor = Color(int.parse(password['color']));
                   bool isSelected = selectedPasswords.contains(password['id']);
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 20.0),
-                    // Padding of 10 between buttons
                     child: SizedBox(
                       height: 85,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: isSelected
-                              ? cardColor.withOpacity(0.8)
-                              : cardColor.withOpacity(0.4),
+                          elevation: 1,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                                 20.0), // Border radius of 35
@@ -168,7 +179,7 @@ class _PasswordsList extends State<PasswordsList> {
                         },
                         child: ListTile(
                           contentPadding:
-                              const EdgeInsets.fromLTRB(15, 0, 20, 0),
+                              const EdgeInsets.fromLTRB(0, 0, 20, 0),
                           title: Text(
                             overflow: TextOverflow.ellipsis,
                             password['name'],
@@ -193,10 +204,27 @@ class _PasswordsList extends State<PasswordsList> {
                               //color: Colors.white, // Text color
                             ),
                           ),
-                          leading: const Icon(
-                            Icons.lock_outline_rounded, // Use the password icon
-                            size: 40, // Scale the icon larger than the button
-                            //color: Colors.blue, // Set the color of the icon
+                          leading: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: isSelected
+                                ?Color(0xFF3F7BD7)
+                                :Color(int.parse(password['color']))
+                                .withOpacity(0.5),
+                            child: isSelected
+                                ?Icon(
+                              color: Colors.white,
+                              Icons.check,
+                              // Use the password icon
+                              size: 30, // Scale the icon larger than the button
+                              //color: Colors.blue, // Set the color of the icon
+                            )
+                                :Icon(
+                              color: Color(int.parse(password['color'])),
+                              Icons.lock_outline_rounded,
+                              // Use the password icon
+                              size: 35, // Scale the icon larger than the button
+                              //color: Colors.blue, // Set the color of the icon
+                            ),
                           ),
                         ),
                       ),
