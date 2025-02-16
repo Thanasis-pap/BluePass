@@ -4,8 +4,8 @@
 
 **BluePass** is a secure and easy-to-use password manager designed to help you store, organize, and manage your passwords and card information securely. All sensitive data is encrypted using **AES encryption** to protect your privacy, and users can enjoy a streamlined experience with biometric authentication for quick access. The app also supports custom themes to match your preferences.
 
-| ![app_home](https://your-link-here) | ![app_cards](https://your-link-here) | ![app_passwords](https://your-link-here) | ![app_theme](https://github.com/Thanasis-pap/BluePass/blob/main/screenshots/app_settings.jpg) |
-| ----------------------------------- | ------------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------------- |
+| ![app_home](https://github.com/Thanasis-pap/BluePass/blob/main/screenshots/app_home.jpg) | ![app_cards](https://github.com/Thanasis-pap/BluePass/blob/main/screenshots/app_search.jpg) | ![app_passwords](https://github.com/Thanasis-pap/BluePass/blob/main/screenshots/app_tools.jpg) | ![app_theme](https://github.com/Thanasis-pap/BluePass/blob/main/screenshots/app_settings.jpg) |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 
 ### Requirements
 
