@@ -45,7 +45,7 @@ class _Terms extends State<Terms> {
                   'Although the App is designed with security in mind, including the use of encryption for sensitive data, the security of your data depends on how you use the App and how you protect your device. The developers are not responsible for any data loss, breaches, or unauthorized access caused by third-party actions, device vulnerabilities, or user negligence. \n'),
               const Text('5. Disclaimer\n'),
               const Text(
-                  'The App is provided \"as is\" without warranties of any kind, whether express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not guarantee that the App will be error-free, secure, or available at all times.'),
+                  'The App is provided "as is" without warranties of any kind, whether express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not guarantee that the App will be error-free, secure, or available at all times.'),
               const Text(
                   'Since the App operates offline, the developers cannot be held liable for any data loss, device issues, or damages caused by the use of the App. Users are encouraged to maintain backups and follow best practices for data security.\n'),
               const Text('6. Limitations of Liability\n'),

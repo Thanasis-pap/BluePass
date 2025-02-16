@@ -1,6 +1,8 @@
 import '../../global_dirs.dart';
 
 class SecurityQuestions extends StatefulWidget {
+  const SecurityQuestions({super.key});
+
   @override
   _SecurityQuestions createState() => _SecurityQuestions();
 }

@@ -17,7 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _key = GlobalKey<ExpandableFabState>();
   final recentHelper = Recent();
   final dbHelper = DatabaseHelper();
-  final Logout logOut = new Logout();
+  final Logout logOut = Logout();
   int currentPageIndex = 0;
   SampleItem? selectedItem;
   List<Map<String, dynamic>?> recentItems = [];
@@ -1063,12 +1063,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                         leading: CircleAvatar(
                                           radius: 22,
                                           backgroundColor:
-                                              Color(int.parse(item?['color']))
+                                              Color(int.parse(item['color']))
                                                   .withOpacity(0.5),
                                           child: Icon(
                                             color: Color(
-                                                int.parse(item?['color'])),
-                                            item?['type'] == 'password'
+                                                int.parse(item['color'])),
+                                            item['type'] == 'password'
                                                 ? Icons.lock_outline_rounded
                                                 : Icons.credit_card_rounded,
                                             // Use the password icon
@@ -1083,7 +1083,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 onPressed: () {
                                                   Clipboard.setData(
                                                           ClipboardData(
-                                                              text: item?[
+                                                              text: item[
                                                                   'password']))
                                                       .then((_) {
                                                     toastification.show(

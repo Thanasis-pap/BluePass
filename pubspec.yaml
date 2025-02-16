@@ -43,7 +43,7 @@ dependencies:
   path:
   encrypt: ^5.0.1
   path_provider: any
-  flutter_secure_storage: any
+  flutter_secure_storage: ^9.2.3
   flutter_colorpicker: ^1.1.0
   toastification:
   fluttertoast: ^8.2.8
@@ -51,17 +51,17 @@ dependencies:
   local_auth: ^2.3.0
   flutter_native_splash: ^2.4.1
   password_strength_checker: ^1.2.4
-  flutter_displaymode: ^0.6.0
-  flutter_animate: ^4.5.0
-  introduction_screen: ^3.1.14
-  provider: ^6.1.2
+  flutter_displaymode:
+  flutter_animate:
+  introduction_screen:
+  provider:
   permission_handler:
   file_picker:
-  csv: ^6.0.0
-  gif: ^2.3.0
-  device_info_plus: ^11.1.0
-  drop_shadow: ^0.1.0
-  flutter_animated_icons: ^1.0.1
+  gif:
+  csv:
+  device_info_plus:
+  drop_shadow:
+  flutter_animated_icons:
 
 dev_dependencies:
   flutter_test:

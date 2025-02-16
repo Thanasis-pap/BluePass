@@ -1,5 +1,4 @@
 import 'package:passwordmanager/global_dirs.dart';
-import 'package:passwordmanager/pages/settings/security_questions.dart';
 
 class GeneralSettings extends StatefulWidget {
   const GeneralSettings({

@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:passwordmanager/db/user_database_enc.dart';
 
 import '../../global_dirs.dart';
-import '../../helpers/export_dialog.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
@@ -33,56 +32,44 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       formKey.currentState!.save();
 
       final user = await dbHelper.loginName(Global.savedValues['username']);
-      if (user != null) {
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title:
-            const Text('Warning', style: TextStyle(fontSize: 25)),
-            content: const Text('Are you sure you want to change your Password?',
-                style: TextStyle(fontSize: 16)),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, 'Cancel');
-                },
-                child: Text('Cancel',
-                    style: TextStyle(fontSize: 18)),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  int result =
-                  await dbHelper.editUser(user['id'], null, null, newPassword);
-                  toastification.show(
-                    context: context,
-                    type: ToastificationType.success,
-                    style: ToastificationStyle.flat,
-                    alignment: Alignment.bottomCenter,
-                    showProgressBar: false,
-                    title: const Text('Password changed'),
-                    autoCloseDuration: const Duration(milliseconds: 1500),
-                  );
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: Text('Yes',
-                    style: TextStyle(fontSize: 18)),
-              ),
-            ],
-          ),
-        );
-      } else {
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          style: ToastificationStyle.flat,
-          alignment: Alignment.bottomCenter,
-          showProgressBar: false,
-          title: const Text('Invalid Password'),
-          autoCloseDuration: const Duration(seconds: 3),
-        );
-      }
-    }
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title:
+          const Text('Warning', style: TextStyle(fontSize: 25)),
+          content: const Text('Are you sure you want to change your Password?',
+              style: TextStyle(fontSize: 16)),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'Cancel');
+              },
+              child: Text('Cancel',
+                  style: TextStyle(fontSize: 18)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                int result =
+                await dbHelper.editUser(user['id'], null, null, newPassword);
+                toastification.show(
+                  context: context,
+                  type: ToastificationType.success,
+                  style: ToastificationStyle.flat,
+                  alignment: Alignment.bottomCenter,
+                  showProgressBar: false,
+                  title: const Text('Password changed'),
+                  autoCloseDuration: const Duration(milliseconds: 1500),
+                );
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text('Yes',
+                  style: TextStyle(fontSize: 18)),
+            ),
+          ],
+        ),
+      );
+        }
   }
 
   void goToNextPage() {
