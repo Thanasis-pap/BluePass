@@ -4,8 +4,8 @@
 
 **BluePass** is a secure and easy-to-use password manager designed to help you store, organize, and manage your passwords and card information securely. All sensitive data is encrypted using **AES encryption** to protect your privacy, and users can enjoy a streamlined experience with biometric authentication for quick access. The app also supports custom themes to match your preferences.
 
-| ![app_home](https://your-link-here) | ![app_cards](https://your-link-here) | ![app_passwords](https://your-link-here) | ![app_theme](https://your-link-here) |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ![app_home](https://your-link-here) | ![app_cards](https://your-link-here) | ![app_passwords](https://your-link-here) | ![app_theme](https://github.com/Thanasis-pap/BluePass/blob/main/screenshots/app_settings.jpg) |
+| ----------------------------------- | ------------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------------- |
 
 ### Requirements
 
@@ -31,14 +31,17 @@
 ## Usage
 
 ### Adding Passwords
+
 - Navigate to the password section, and tap the **Add Password** button.
 - Enter the relevant details such as the account name, username, password, and optional notes.
 
 ### Managing Cards
+
 - Go to the cards section, and tap the **Add Card** button.
 - Add card details such as cardholder name, card number, expiration date, and CVV.
 
 ### Exporting Data
+
 - Navigate to the settings page and select **Export Data**.
 - Your passwords and cards are exported as an encrypted `.db` file to your device's Downloads folder.
 
